@@ -31,25 +31,30 @@ Legend for test placement:
 
 ### 1.2 Sail / Docker environment
 - [x] `compose.yaml` configured
-- [ ] Verify Sail boots cleanly with MySQL 8 and Redis (if used). Document in README.
-- **Tests:** none (infra) — replace with a `tests/Feature/SmokeTest.php` asserting `GET /` returns 200.
+- [x] `tests/Feature/SmokeTest.php` asserts `GET /` returns 200.
+- **Tests:** `tests/Feature/SmokeTest.php`.
 
 ### 1.3 Pest 4 setup
 - [x] Pest installed
-- [ ] Configure `tests/Pest.php` for `RefreshDatabase`, factory faker locale, base test case bindings.
-- **Tests:** `tests/Unit/PestSetupTest.php` — confirms `RefreshDatabase` trait wired and `fake()` works.
+- [x] `tests/Pest.php` wires `RefreshDatabase` to all Feature tests.
+- [x] `tests/Unit/PestSetupTest.php` verifies Faker helper + Pest configuration.
+- **Tests:** `tests/Unit/PestSetupTest.php`.
 
 ### 1.4 Pint formatter
 - [x] Pint installed
-- [ ] Add `pint.json` if project deviates from defaults; add a CI/local script reminder.
+- [x] Default Laravel preset in use (no `pint.json` override needed). Run via `vendor/bin/sail bin pint --dirty --format agent`.
 
 ### 1.5 Environment variables
-- [ ] `.env.example` extended with: `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_WEBHOOK_SECRET`, `MAIL_*`, `APP_URL`, `SESSION_DRIVER=database`, `QUEUE_CONNECTION=database`.
-- **Tests:** `tests/Feature/ConfigTest.php` — asserts required config keys resolve when env present.
+- [x] `.env.example` extended with: `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_WEBHOOK_SECRET`, `EVOLUTION_HTTP_TIMEOUT`, `EVOLUTION_HTTP_RETRY`. Mail, DB and queue defaults aligned with Sail (mailpit, mysql, database driver).
+- [x] `config/services.php` exposes `services.evolution` block.
+- [x] `tests/Feature/ConfigTest.php` asserts keys resolve and core config defaults present.
+- **Tests:** `tests/Feature/ConfigTest.php`.
 
 ### 1.6 Application service providers
-- [ ] Register a `DomainServiceProvider` for binding domain services (Evolution client, activity recorder).
-- **Tests:** `tests/Unit/ServiceProviderBindingTest.php` — resolves each binding from container.
+- [x] `App\Providers\DomainServiceProvider` registered in `bootstrap/providers.php`.
+- [x] Binds `EvolutionClient` (singleton, configured from `services.evolution`) and `ActivityRecorder` (singleton stub for Phase 9.6).
+- [x] `tests/Unit/ServiceProviderBindingTest.php` resolves both as singletons.
+- **Tests:** `tests/Unit/ServiceProviderBindingTest.php`.
 
 ---
 
@@ -59,39 +64,38 @@ Reference assets: `docs/design/padrao_de_cores.png`, `docs/design/botoes.png`, `
 
 ### 2.1 Tailwind v4 + Vite pipeline
 - [x] Vite + Tailwind installed
-- [ ] Configure Tailwind v4 with project palette extracted from `padrao_de_cores.png`.
-- [ ] Define CSS custom properties for primary/secondary/success/warning/danger/neutral.
-- **Tests:** `tests/Browser/StyleSmokeTest.php` — load `/login`, assert primary color tokens applied.
+- [x] Tailwind v4 `@theme` block populated with project palette extracted from `padrao_de_cores.png`.
+- [x] CSS custom properties for primary/accent/success/warning/danger/neutral defined in `resources/css/app.css`.
+- **Tests:** covered by `tests/Feature/Dev/UiPreviewTest.php` (asserts vite stylesheet loaded on `/dev/ui`).
 
 ### 2.2 Color tokens
-- [ ] Implement design palette as Tailwind theme tokens (`primary`, `accent`, `surface`, `border`, `text-muted`, `text-strong`).
-- [ ] Document tokens inline in `resources/css/app.css`.
+- [x] Palette implemented as Tailwind theme tokens (`primary-*`, `accent-*`, `surface*`, `outline`, `ink`, `ink-muted`, `success`, `warning`, `danger`).
+- [x] Inline documentation block in `resources/css/app.css` listing every token + design source.
 
 ### 2.3 Typography
-- [ ] Pick + load font matching the design (Inter or similar). Define heading/body scales.
-- [ ] Set base line-height, weights.
+- [x] Inter loaded as primary `--font-sans` (Instrument Sans kept as fallback). Base line-height + smoothing applied to `html` / `body`.
 
-### 2.4 Base components (Wireui-backed where available)
-For each: build Blade component under `resources/views/components/ui/`, configure Wireui where applicable.
-- [ ] **2.4.1 Button** (variants: primary, secondary, ghost, danger; sizes sm/md/lg; loading state)
-- [ ] **2.4.2 Input** (text, email, password, number; with label, hint, error)
-- [ ] **2.4.3 Textarea**
-- [ ] **2.4.4 Select** (Wireui native select)
-- [ ] **2.4.5 Checkbox**
-- [ ] **2.4.6 Radio**
-- [ ] **2.4.7 Modal** (Wireui modal, with header/body/footer slots)
-- [ ] **2.4.8 Toast / Notification** (Wireui notifications)
-- [ ] **2.4.9 Card** (used for Kanban deal cards and detail panels)
-- [ ] **2.4.10 Badge / Pill** (status chips)
-- [ ] **2.4.11 Avatar** (initials fallback + image)
-- **Tests:** `tests/Browser/Components/UiComponentsTest.php` — render each component with sample props, assert visible, no JS errors.
+### 2.4 Base components (under `resources/views/components/ui/`)
+- [x] **2.4.1 Button** — variants primary/secondary/outline/ghost/danger/success; sizes sm/md/lg; loading + disabled states.
+- [x] **2.4.2 Input** — label, hint, error, optional leading icon, error-state styling.
+- [x] **2.4.3 Textarea** — label, hint, error.
+- [x] **2.4.4 Select** — placeholder, options array, value selection, error state.
+- [x] **2.4.5 Checkbox** — checked/disabled/error/success states.
+- [x] **2.4.6 Radio** — same state matrix as checkbox.
+- [x] **2.4.7 Modal** — header/body/footer slots, sizes sm/md/lg/xl, hidden by default.
+- [x] **2.4.8 Toast** — info/success/warning/danger.
+- [x] **2.4.9 Card** — title/subtitle/header/footer/actions slots.
+- [x] **2.4.10 Badge** — neutral/primary/success/warning/danger/accent.
+- [x] **2.4.11 Avatar** — initials fallback + image variant.
+- **Tests:** `tests/Feature/Ui/UiComponentsTest.php` — Blade-rendering assertions per component.
 
 ### 2.5 Icon set
-- [ ] Pick icon library compatible with Wireui (Heroicons). Wire it up.
+- [x] `<x-ui.icon name="…">` thin wrapper over Wireui's `<x-icon>` (Heroicons outline/solid).
 
 ### 2.6 Component preview page (dev-only)
-- [ ] Route `/dev/ui` (gated by `APP_ENV=local`) showing all components for visual QA.
-- **Tests:** `tests/Feature/Dev/UiPreviewTest.php` — route returns 200 in `local`, 404 in `production`.
+- [x] Route `GET /dev/ui` gated by `App::environment('production')` returning 404 in production.
+- [x] View at `resources/views/dev/ui-preview.blade.php` showing every component for visual QA.
+- **Tests:** `tests/Feature/Dev/UiPreviewTest.php` — preview returns 200 in non-prod, 404 in production.
 
 ---
 
@@ -99,21 +103,22 @@ For each: build Blade component under `resources/views/components/ui/`, configur
 
 ### 3.1 Guest layout (non-logged)
 Reference: `docs/design/layout_base_login.png`.
-- [ ] `resources/views/layouts/guest.blade.php` — centered card, brand logo, footer.
-- [ ] Mobile-first responsive rules.
-- **Tests:** `tests/Browser/Layouts/GuestLayoutTest.php` — visit `/login`, assert layout structure + brand visible.
+- [x] `resources/views/components/layouts/guest.blade.php` — split-screen layout (form left, brand block right), brand mark, mobile-first.
+- [x] `tests/Feature/Layouts/GuestLayoutTest.php` — Blade-renders layout with brand + slot + heading/subheading.
 
 ### 3.2 App layout (logged-in)
 Reference: `docs/design/dashboard.png`.
-- [ ] `resources/views/layouts/app.blade.php` — sidebar nav, top bar, user menu, mobile drawer.
-- [ ] Sidebar items conditional on role: Kanban, Leads, Reports (Owner only), Settings.
-- [ ] Mobile bottom nav or hamburger.
-- **Tests:** `tests/Browser/Layouts/AppLayoutTest.php` — login as Owner / Salesperson, assert nav items differ; toggle mobile menu.
+- [x] `resources/views/components/layouts/app.blade.php` — fixed icon sidebar, sticky topbar, Alpine-powered mobile drawer, `actions` slot.
+- [x] Sidebar items role-aware via `App\Support\Navigation`: Kanban + Leads + Settings for everyone; Reports + Team only for Business Owner; empty for guests.
+- [x] `app/Models/User::roleSlug()` defensive accessor (returns null until Phase 4 wires the relation).
+- [x] `tests/Unit/Support/NavigationTest.php` — role matrix.
+- [x] `tests/Feature/Layouts/AppLayoutTest.php` — sidebar/topbar/drawer markers + role-scoped nav items.
 
 ### 3.3 Layout primitives
-- [ ] Page header component (title + actions slot).
-- [ ] Empty-state component.
-- [ ] Loading skeleton component.
+- [x] `<x-ui.page-header>` — title, subtitle, actions slot.
+- [x] `<x-ui.empty-state>` — title, description, icon, actions slot.
+- [x] `<x-ui.skeleton>` — text (configurable lines), avatar, card shapes.
+- [x] `tests/Feature/Layouts/PrimitivesTest.php` — render assertions for each.
 
 ---
 
@@ -122,366 +127,380 @@ Reference: `docs/design/dashboard.png`.
 Implements `docs/database_schema.md`.
 
 ### 4.1 Lookup tables migrations
-- [ ] **4.1.1** `roles`
-- [ ] **4.1.2** `pipeline_stages`
-- [ ] **4.1.3** `invite_statuses`
-- [ ] **4.1.4** `whatsapp_connection_statuses`
-- [ ] **4.1.5** `message_directions`
-- [ ] **4.1.6** `message_statuses`
-- [ ] **4.1.7** `message_types`
-- [ ] **4.1.8** `activity_types`
+- [x] **4.1.1** `roles`
+- [x] **4.1.2** `pipeline_stages`
+- [x] **4.1.3** `invite_statuses`
+- [x] **4.1.4** `whatsapp_connection_statuses`
+- [x] **4.1.5** `message_directions`
+- [x] **4.1.6** `message_statuses`
+- [x] **4.1.7** `message_types`
+- [x] **4.1.8** `activity_types`
 
 ### 4.2 Core domain migrations
-- [ ] **4.2.1** `companies`
-- [ ] **4.2.2** Modify `users` — add `company_id`, `role_id`, `avatar_path`, `is_active`, `must_change_password`, `last_login_at`, `deleted_at`
-- [ ] **4.2.3** `invites`
-- [ ] **4.2.4** `leads` (with composite unique `(company_id, email)`)
-- [ ] **4.2.5** `deals`
-- [ ] **4.2.6** `deal_notes`
-- [ ] **4.2.7** `activities`
-- [ ] **4.2.8** `whatsapp_connections`
-- [ ] **4.2.9** `messages`
-- **Tests:** `tests/Feature/Database/SchemaTest.php` — assert each table exists with required columns and indexes (use `Schema::hasColumns`, `Schema::hasIndex`).
+- [x] **4.2.1** `companies`
+- [x] **4.2.2** `modify_users_table` adds `company_id`, `role_id`, `avatar_path`, `is_active`, `must_change_password`, `last_login_at`, `deleted_at`
+- [x] **4.2.3** `invites` (token unique, composite `company_id+email` index)
+- [x] **4.2.4** `leads` with composite unique `(company_id, email)`
+- [x] **4.2.5** `deals` with `loss_reason`, `won_at`, `lost_at`, soft deletes
+- [x] **4.2.6** `deal_notes`
+- [x] **4.2.7** `activities` with `metadata` JSON, `(deal_id, created_at)` index
+- [x] **4.2.8** `whatsapp_connections` (one-per-user unique, instance_name unique)
+- [x] **4.2.9** `messages` (lead_id+created_at, deal_id+created_at indexes)
+- **Tests:** `tests/Feature/Database/SchemaTest.php` — table + column presence; lead-email composite uniqueness; cross-company email allowed; whatsapp one-per-user enforced.
 
 ### 4.3 Models
-For each: Eloquent model with relationships, casts, `$fillable`, soft-deletes where applicable, global `CompanyScope` on tenant tables.
-- [ ] Company, Role, User, Invite, InviteStatus
-- [ ] PipelineStage, Lead, Deal, DealNote
-- [ ] ActivityType, Activity
-- [ ] WhatsappConnection, WhatsappConnectionStatus
-- [ ] MessageDirection, MessageStatus, MessageType, Message
-- **Tests:** `tests/Unit/Models/RelationshipsTest.php` — assert each relationship method returns correct relation type and target.
+- [x] `Company`, `Role`, `User` (modified), `Invite`, `InviteStatus`.
+- [x] `PipelineStage`, `Lead`, `Deal`, `DealNote`.
+- [x] `ActivityType`, `Activity`.
+- [x] `WhatsappConnection`, `WhatsappConnectionStatus`.
+- [x] `MessageDirection`, `MessageStatus`, `MessageType`, `Message`.
+- [x] All tenant models use `App\Models\Concerns\BelongsToCompany`. User exposes `roleSlug()`, `isBusinessOwner()`, `isSalesperson()`. Domain constants live as model class consts.
+- **Tests:** `tests/Unit/Models/RelationshipsTest.php` — verifies HasMany / BelongsTo / HasOne wiring per model.
 
 ### 4.4 Factories
-- [ ] Factories for every domain model. States: `Lead::factory()->forCompany($c)`, `Deal::factory()->inStage('lost')->withLossReason()`, `User::factory()->businessOwner()`, `User::factory()->salesperson()`, etc.
-- **Tests:** `tests/Unit/Factories/FactoriesTest.php` — each factory builds a persistable model.
+- [x] Factory for every domain model.
+- [x] States: `User::factory()->businessOwner()`, `salesperson()`, `inactive()`, `forCompany()`; `Lead::factory()->forCompany()`, `ownedBy()`; `Deal::factory()->forLead()`, `inStage(slug)`, `withLossReason()`, `won()`; `Invite::factory()->accepted()`; `WhatsappConnection::factory()->connected()`; `Message::factory()->inbound()`; `Role`/`PipelineStage` factories with named states.
+- **Tests:** `tests/Feature/Database/FactoriesTest.php` — every factory persists; `Deal::withLossReason()` + `Deal::won()` set the right stage flags.
 
 ### 4.5 Seeders
-- [ ] **4.5.1** `RoleSeeder` — business_owner, salesperson
-- [ ] **4.5.2** `PipelineStageSeeder` — new_lead, contacted, proposal_sent, negotiation, won, lost (with flags + positions)
-- [ ] **4.5.3** `InviteStatusSeeder`
-- [ ] **4.5.4** `WhatsappConnectionStatusSeeder`
-- [ ] **4.5.5** `MessageDirectionSeeder`, `MessageStatusSeeder`, `MessageTypeSeeder`
-- [ ] **4.5.6** `ActivityTypeSeeder`
-- [ ] **4.5.7** `DatabaseSeeder` orchestration + a `DemoDataSeeder` for local dev only
-- **Tests:** `tests/Feature/Database/LookupSeedTest.php` — after `db:seed`, assert each lookup contains expected slugs.
+- [x] **4.5.1** `RoleSeeder`, **4.5.2** `PipelineStageSeeder`, **4.5.3** `InviteStatusSeeder`, **4.5.4** `WhatsappConnectionStatusSeeder`.
+- [x] **4.5.5** `MessageDirectionSeeder`, `MessageStatusSeeder`, `MessageTypeSeeder`.
+- [x] **4.5.6** `ActivityTypeSeeder`.
+- [x] **4.5.7** `DatabaseSeeder` orchestrates all eight lookup seeders. (`DemoDataSeeder` deferred until Phase 15 polishing.)
+- **Tests:** `tests/Feature/Database/LookupSeedTest.php` — every canonical slug seeded; Won/Lost stages flagged correctly.
 
 ### 4.6 CompanyScope global scope
-- [ ] Trait `BelongsToCompany` applying global scope to filter by `auth()->user()->company_id`.
-- [ ] Auto-fill `company_id` on save via observer.
-- **Tests:** `tests/Feature/Authorization/TenantScopeTest.php` — user from Company A cannot read records of Company B even via direct query.
+- [x] `App\Models\Scopes\CompanyScope` filters by authenticated user's `company_id` (no-op for guests).
+- [x] `App\Models\Concerns\BelongsToCompany` boots the global scope and auto-fills `company_id` on `creating` when the user is authenticated and value is missing.
+- **Tests:** `tests/Feature/Authorization/TenantScopeTest.php` — cross-tenant reads filtered for Lead + Deal; `company_id` auto-fill; explicit `company_id` honored.
 
 ---
 
 ## Phase 5 — Authentication & Registration
 
 ### 5.1 Auth scaffolding
-- [ ] Build manual auth (no Breeze/Jetstream) using Livewire components: `Auth\Login`, `Auth\Register`, `Auth\ForgotPassword`, `Auth\ResetPassword`.
-- [ ] Routes in `routes/web.php` under guest middleware group.
-- **Tests:** `tests/Feature/Auth/LoginTest.php`, `RegisterTest.php`, `LogoutTest.php`, `PasswordResetTest.php`.
+- [x] Livewire components in `app/Livewire/Auth/`: `Register`, `Login`, `ForgotPassword`, `ResetPassword`, `VerifyEmail`.
+- [x] Dedicated `routes/auth.php` mounted via `bootstrap/app.php` `then` hook; guest + auth groups.
+- [x] Default redirect targets configured: guests → `login`, users → `/kanban`.
 
 ### 5.2 Business Owner registration (US-1.1)
-- [ ] Form: name, email, password, password_confirmation, company_name.
-- [ ] In transaction: create Company → create User with role=business_owner → log in → redirect to Kanban.
-- [ ] Send welcome email (queued).
-- **Tests:** `tests/Feature/Auth/BusinessOwnerRegistrationTest.php`
-  - registers successfully and creates Company + User
-  - rejects duplicate email globally
-  - validates password rules (min 8)
-  - logs in and redirects to `/kanban`
-  - dispatches `WelcomeMail`
+- [x] Livewire `Register` form: name, email, password, password_confirmation, company_name.
+- [x] DB transaction creates Company → User with `business_owner` role.
+- [x] Queued `WelcomeMail` + email verification notification dispatched.
+- [x] Auto-login + redirect to `/kanban`.
+- **Tests:** `tests/Feature/Auth/BusinessOwnerRegistrationTest.php` — happy path, duplicate email, weak password, mail/notification dispatch.
 
 ### 5.3 Login (US-1.2)
-- [ ] Livewire login form with rate-limiting via `RateLimiter`.
-- [ ] Generic error on bad credentials.
-- [ ] Remember-me toggle.
-- **Tests:** `tests/Feature/Auth/LoginTest.php`
-  - valid credentials → authenticated + redirect
-  - invalid credentials → generic error, no enumeration
-  - rate limit triggers after N attempts
-  - remember-me sets persistent cookie
+- [x] Livewire `Login` with `RateLimiter` (5 attempts per email+IP / 60s).
+- [x] Generic error on bad credentials.
+- [x] `remember` checkbox + `Auth::attempt(..., $this->remember)`.
+- [x] Inactive users blocked at the credential layer (`is_active = true` constraint).
+- [x] `last_login_at` stamped on success.
+- **Tests:** `tests/Feature/Auth/LoginTest.php` — happy path, bad credentials, throttle, inactive user blocked.
 
 ### 5.4 Logout (US-1.4)
-- [ ] POST `/logout` route, invalidate session, regenerate token.
-- **Tests:** `tests/Feature/Auth/LogoutTest.php`
-  - logout terminates session
-  - CSRF token rotated
+- [x] `POST /logout` route (auth-only) invalidates session and regenerates CSRF token.
+- **Tests:** `tests/Feature/Auth/LogoutTest.php` — logout for authed user; guest redirected to `login`.
 
 ### 5.5 Password reset (US-1.3)
-- [ ] Forgot-password page → email link (60 min TTL).
-- [ ] Reset page validating token.
-- [ ] On reset: invalidate other sessions, send confirmation email.
-- **Tests:** `tests/Feature/Auth/PasswordResetTest.php`
-  - request with unknown email returns generic success (no enumeration)
-  - valid token allows reset
-  - expired token rejected
-  - all sessions invalidated post-reset
-  - confirmation email dispatched
+- [x] `ForgotPassword` Livewire — calls `Password::sendResetLink`; same generic message regardless of email match (no enumeration).
+- [x] `ResetPassword` Livewire — uses Laravel `Password::reset`; on success: deletes the user's session rows + dispatches `PasswordResetConfirmationMail`.
+- [x] Default broker `expire => 60` (minutes) kept.
+- **Tests:** `tests/Feature/Auth/PasswordResetTest.php` — known + unknown email path, valid token resets + queues confirmation mail, invalid token rejected.
 
 ### 5.6 Email verification
-- [ ] Standard Laravel email verification with branded notification.
-- **Tests:** `tests/Feature/Auth/EmailVerificationTest.php` — unverified user blocked from app routes; verifies via signed link.
+- [x] `User` implements `MustVerifyEmail`. Routes guarded by `verified` middleware.
+- [x] `VerifyEmail` Livewire notice page with resend + sign-out actions.
+- [x] Signed verification URL + 6/min throttle.
+- **Tests:** `tests/Feature/Auth/EmailVerificationTest.php` — unverified blocked, signed verify URL accepted, verified can reach `/kanban`.
 
 ---
 
 ## Phase 6 — Company & User Management
 
 ### 6.1 Roles & policies foundation
-- [ ] `App\Policies\` for User, Lead, Deal, DealNote, Invite, WhatsappConnection, Message, Activity.
-- [ ] Gate definitions or `before` callback granting Business Owner full access within company.
-- **Tests:** `tests/Feature/Authorization/PolicyTest.php` — for each policy method, assert allow/deny per role.
+- [x] `App\Policies\` for User, Lead, Deal, DealNote, Invite, WhatsappConnection, Message, Activity.
+- [x] Owner gets in-company access expressed inside each policy method (no global `before` so self-deactivate stays blocked).
+- **Tests:** `tests/Feature/Authorization/PolicyTest.php` — allow/deny matrix per policy method per role.
 
 ### 6.2 Invite via email link (US-2.1)
-- [ ] Owner UI to enter name + email, dispatches `SendInviteJob`.
-- [ ] Signed token, 7-day expiry.
-- [ ] Mail with invite URL.
-- [ ] Public route `/invites/{token}` — render acceptance form (set password) + creates Salesperson user.
-- [ ] Owner list shows pending/accepted/expired with resend + revoke.
+- [x] Owner UI (`App\Livewire\Team\InviteList`) at `/team/invites` to enter name + email; dispatches `SendInviteJob`.
+- [x] `Str::random(48)` token, 7-day expiry, persisted on `invites`.
+- [x] `App\Mail\InviteMail` with invite URL.
+- [x] Public route `/invites/{token}` (`App\Livewire\Invites\AcceptInvite`) — set-password form creates Salesperson + auto-login.
+- [x] Owner list shows pending/accepted/expired/revoked with resend + revoke. Pending past `expires_at` auto-marked expired on render.
 - **Tests:** `tests/Feature/Companies/EmailInviteTest.php`
-  - Owner creates invite → mail queued, token persisted
-  - Salesperson opens link → form rendered, can set password, account created
-  - expired token rejected
+  - owner creates invite → job dispatched, token persisted
+  - non-owner cannot create invite (403)
+  - duplicate user email + existing pending invite rejected
+  - acceptance form creates Salesperson + auto-logs in
+  - expired token marked expired and rejected
   - revoked token rejected
-  - resend regenerates token + sends email
-  - non-Owner cannot create invite (403)
+  - resend regenerates token + dispatches mail
+  - revoke flips status to revoked
+  - queued job sends `InviteMail`
 
 ### 6.3 Direct account creation (US-2.2)
-- [ ] Owner form: name, email, temporary password.
-- [ ] Creates Salesperson with `must_change_password=true`.
-- [ ] Email with login info.
-- [ ] On first login, redirected to forced password change before any other action.
+- [x] Owner form (`App\Livewire\Team\CreateUser`): name, email, temporary password.
+- [x] Creates Salesperson with `must_change_password=true`, email_verified.
+- [x] `App\Mail\AccountCreatedMail` with login + temporary password.
+- [x] `App\Http\Middleware\EnsurePasswordChanged` (web group) forces redirect to `/password/change` (`App\Livewire\Auth\ChangePassword`) until flag cleared.
 - **Tests:** `tests/Feature/Companies/DirectAccountCreationTest.php`
-  - account created with role salesperson
-  - email dispatched
-  - first login forces password change
+  - account created with role salesperson + must_change_password
+  - mail queued with temp password
+  - duplicate email rejected
+  - first login forces password change redirect
   - password change clears flag
+  - non-owner forbidden
 
 ### 6.4 List & manage Salespeople (US-2.3)
-- [ ] Livewire table: name, email, status, date added, actions (deactivate / reactivate).
-- [ ] Search by name/email.
-- [ ] Owner cannot deactivate self.
+- [x] `App\Livewire\Team\UserList` at `/team` — table with name, email, role, status, joined date, deactivate/reactivate.
+- [x] Live search (`?q=`) filters by name or email.
+- [x] Owner cannot deactivate self (policy + view hides action).
 - **Tests:** `tests/Feature/Companies/UserManagementTest.php`
-  - list shows only company users
-  - search filters
+  - list shows only same-company users
+  - search filters by name and email
   - deactivate blocks login
   - reactivate restores login
-  - cannot deactivate self
+  - cannot deactivate self (403)
   - non-Owner forbidden (403)
+  - cross-company target forbidden
 
 ### 6.5 Reassign lead ownership (US-2.4)
-- [ ] Action on lead/deal detail to pick a new Salesperson.
-- [ ] Cascades to all deals of the lead.
-- [ ] Activity entries written for lead + each deal.
+- [x] `App\Services\Leads\ReassignLeadService` reassigns lead + cascades to all deals in a transaction.
+- [x] `App\Services\Activity\ActivityRecorder` upgraded to persist real `activities` rows. Writes `lead_reassigned` (lead) + `ownership_changed` (per deal).
+- [x] `App\Livewire\Leads\ReassignLead` embeddable Salesperson-picker form, owner-only.
 - **Tests:** `tests/Feature/Leads/ReassignLeadTest.php`
   - lead + all deals reassigned
-  - activities created with `lead_reassigned` and `ownership_changed`
-  - previous owner cannot access lead afterwards
-  - only Owner can reassign
+  - `lead_reassigned` + `ownership_changed` activities recorded with before/after + actor
+  - previous owner loses `view` ability (policy)
+  - only Owner can mount the Livewire component (403 for original owner)
+  - new owner from another company rejected with `InvalidArgumentException`
 
 ---
 
 ## Phase 7 — Kanban Pipeline (wire:sort)
 
 ### 7.1 Kanban route + Livewire component
-- [ ] Route `/kanban` (auth + verified middleware).
-- [ ] Livewire component `App\Livewire\Kanban\Board` rendering columns from `pipeline_stages`.
-- [ ] Scoped queries via Policy + global scope (Salesperson sees own; Owner sees all).
+- [x] `/kanban` (auth + verified) routes to `App\Livewire\Kanban\Board` (`#[Layout('components.layouts.app')]`).
+- [x] Board renders columns from active `pipeline_stages` ordered by position.
+- [x] Salesperson scoping via `owner_user_id = auth->id`; Owner sees all + optional `ownerFilter`. `CompanyScope` keeps cross-tenant invisible.
 - **Tests:** `tests/Feature/Kanban/BoardRenderTest.php`
   - Salesperson sees only own deals
-  - Owner sees all deals in own company
+  - Owner sees all company deals
   - cross-company deals never visible
-  - column counts and totals correct
+  - column counts + totals correct
+  - all six pipeline stages rendered
 
 ### 7.2 Kanban view (Tailwind + responsive)
-- [ ] Reference `docs/design/kanban.png`.
-- [ ] Columns horizontally scrollable on mobile, grid on desktop.
-- [ ] Card displays: title, value (formatted), lead name, last activity, owner badge (Owner view only).
-- **Tests:** `tests/Browser/Kanban/BoardLayoutTest.php` — desktop + mobile viewports render columns and cards.
+- [x] Horizontally scrollable column row on mobile (`flex overflow-x-auto`), grid on desktop (`lg:overflow-visible`, `flex-1` columns).
+- [x] Card shows title, formatted value, lead name, last-activity timestamp, owner badge (Owner-only).
+- [x] Loss-reason modal lives in same component, gated by `pendingLostDealId`.
+- **Tests:** `tests/Browser/Kanban/BoardLayoutTest.php` — deferred (Pest 4 browser smoke covered in Phase 15).
 
 ### 7.3 Drag-and-drop with `wire:sort`
-- [ ] **MUST use Livewire 4 `wire:sort` directive.** No external DnD libraries.
-- [ ] Backend method `updateStage(int $dealId, string $toStageSlug)` validates ownership + stage transition.
-- [ ] If destination = `lost` → return a flag instructing the UI to open the loss-reason modal before persisting; on cancel, revert.
-- [ ] If destination = `won` → mark `won_at`, lock further edits except notes.
-- [ ] Activity entry `stage_changed` written.
-- **Tests:**
-  - `tests/Feature/Kanban/MoveDealTest.php`
-    - moves deal to allowed stage
-    - rejects move on a deal not owned by current Salesperson (403)
-    - move to `lost` without reason fails validation
-    - move to `lost` with reason persists `loss_reason` + `lost_at`
-    - move to `won` sets `won_at`, locks future edits
-    - records `stage_changed` activity with from/to stage ids
-  - `tests/Browser/Kanban/DragDropTest.php` — drag a card across columns, assert new stage shown after refresh; uses `wire:sort` interactions.
+- [x] `wire:sort="updateStage($item, '<slug>')"` per column; cards expose `wire:sort.item="<deal-id>"`. No external DnD libs.
+- [x] `Board::updateStage(int $dealId, string $toStageSlug)` authorizes via `move` policy, no-ops on same stage.
+- [x] Destination `lost` → returns `['status' => 'requires_loss_reason']` and arms `pendingLostDealId`; modal calls `confirmLoss` (validates non-empty `lossReason`) or `cancelLoss` to revert.
+- [x] Destination `won` → sets `won_at`; `DealPolicy::update` locks further edits while keeping notes editable.
+- [x] `ActivityRecorder` writes `stage_changed` (with `from_stage_id`/`to_stage_id` in metadata) plus `deal_won` / `deal_lost` on terminal moves.
+- **Tests:** `tests/Feature/Kanban/MoveDealTest.php`
+  - moves deal to allowed stage + writes stage_changed activity
+  - non-owning Salesperson gets 403
+  - move to lost without reason fails validation
+  - move to lost with reason persists loss_reason + lost_at + deal_lost activity
+  - cancelLoss reverts pending state
+  - move to won sets won_at, locks update via policy, writes deal_won activity
+  - returns requires_loss_reason flag when targeting lost
+- Browser regression test deferred to Phase 15.
 
 ### 7.4 Kanban filter (US-3.3, Owner only)
-- [ ] Filter dropdown listing active Salespeople + "All".
-- [ ] Filter state in URL query string (`?owner=`).
+- [x] Owner-only `<select>` (`data-testid="owner-filter"`) lists active company Salespeople; "All" submits null.
+- [x] State bound via `#[Url(as: 'owner')]` so it survives reloads.
+- [x] `mount()` strips bogus `?owner=` for non-owners; `setOwnerFilter` throws `ValidationException` if non-owner posts directly.
 - **Tests:** `tests/Feature/Kanban/FilterTest.php`
   - filter scopes board to selected Salesperson
-  - "All" returns all company deals
-  - state persisted in URL
-  - non-Owner does not see filter (403 if posted directly)
+  - null filter returns all company deals
+  - non-Owner does not see filter, cannot set it
+  - non-Owner mount strips `?owner=`
+  - Owner `?owner=` query param hydrates filter
 
 ---
 
 ## Phase 8 — Lead Management
 
 ### 8.1 Inline lead creation from Kanban (US-4.1)
-- [ ] "New Lead" button on board opens Wireui modal.
-- [ ] Form: name, email, phone, optional notes.
-- [ ] On email blur or full match → real-time lookup against `leads` (scoped per company).
-- [ ] If no match → create Lead + auto-create Deal in `new_lead` (Phase 9.1).
-- [ ] If match → trigger reuse flow (8.2).
+- [x] `App\Livewire\Leads\CreateLead` modal mounted in board topbar (`<livewire:leads.create-lead />`).
+- [x] Form: name, email, phone, notes; Owner-only `ownerUserId` select.
+- [x] `email` debounced live update hits `LeadLookupService::findInCompany` (case-insensitive, trim) to populate `matchedLeadId` and `matchVisible`.
+- [x] No match → `CreateLeadWithDeal::create` opens transaction, creates Lead + Deal in `new_lead` stage, records `lead_created` + `deal_created` activities.
+- [x] Match → `reuseExisting` calls `addDealForLead` instead of creating second lead.
 - **Tests:** `tests/Feature/Leads/CreateLeadTest.php`
-  - creates lead + deal in single submission
-  - rejects duplicate email per company (validation + DB constraint)
+  - creates lead + deal + lead_created activity in one submission
+  - rejects duplicate email per company
   - allows same email in different company
-  - lead owner = current user (or selected Salesperson if Owner)
-  - `lead_created` activity recorded
+  - sets owner to current user for Salesperson
+  - Owner can assign lead to a Salesperson
+  - service throws + rolls back when owner is from another company
 
 ### 8.2 Reuse existing lead on duplicate email (US-4.2)
-- [ ] Real-time Livewire validation hits `LeadLookupService`.
-- [ ] If match found and visible to current user → show match card with reuse / cancel.
-- [ ] If match owned by another Salesperson and current user is Salesperson → show "lead exists, contact your manager" notice.
-- [ ] On reuse → skip lead creation, jump to deal creation step.
+- [x] `App\Services\Leads\LeadLookupService::findInCompany` + `isVisibleTo` enforce visibility (Salesperson sees only own; Owner sees all).
+- [x] CreateLead modal renders match card with "Add deal to this lead" when visible.
+- [x] Hidden match shows "Lead exists; contact your manager." `reuseExisting` rejects with email error if not visible.
+- [x] Reuse calls `CreateLeadWithDeal::addDealForLead` — no new lead, only a new deal in `new_lead` stage.
 - **Tests:** `tests/Feature/Leads/ReuseLeadTest.php`
-  - duplicate email returns existing lead reference
-  - Salesperson cannot reuse a lead owned by another Salesperson
+  - duplicate email surfaces existing lead reference
+  - Salesperson blocked from reusing another Salesperson's lead (no deal created)
   - Owner can reuse any lead in company
-  - reuse path creates deal but no second lead
+  - reuse path adds deal but lead count unchanged
+  - `LeadLookupService` matches case-insensitive + trimmed input
 
 ### 8.3 Edit lead (US-4.3)
-- [ ] Livewire component for lead detail / edit.
-- [ ] Salesperson cannot edit email (Owner-only).
-- [ ] Email change re-runs uniqueness validation.
-- [ ] `lead_updated` activity entries with field-level before/after.
+- [x] `App\Livewire\Leads\EditLead` (`#[Layout]`, `/leads/{lead}`) shows form + reassign panel for Owner.
+- [x] Email field hidden behind `LeadPolicy::updateEmail` (Owner-only); Salesperson form silently keeps original email.
+- [x] Email change re-runs uniqueness validation (case-insensitive, trimmed, scoped to company, excludes self).
+- [x] `ActivityRecorder` writes one `lead_updated` per changed field with `field` in metadata + before/after strings.
 - **Tests:** `tests/Feature/Leads/EditLeadTest.php`
-  - update name / phone / notes succeeds
-  - Salesperson cannot edit email
+  - updates name/phone/notes
+  - Salesperson cannot change email (silent revert, no error)
+  - Owner can change email
   - duplicate email rejected on update
-  - activity entries created per changed field
+  - one `lead_updated` activity per changed field with metadata
+  - no activity written when nothing changes
+  - non-owning Salesperson gets 403 on mount
 
 ---
 
 ## Phase 9 — Deal Management
 
 ### 9.1 Auto-create deal on lead creation (US-5.1)
-- [ ] Service `CreateLeadWithDeal` wraps both creations in a transaction.
-- [ ] Deal defaults: title = lead name, value = 0, stage = `new_lead`.
-- **Tests:** covered in `tests/Feature/Leads/CreateLeadTest.php`; add `tests/Feature/Deals/AutoCreateDealTest.php` asserting service rolls back on failure.
+- [x] `App\Services\Leads\CreateLeadWithDeal::create` (built in 8.1) wraps Lead + Deal creations in `DB::transaction`.
+- [x] Deal defaults: `title = lead.name`, `value = 0`, `stage = new_lead`. `lead_created` + `deal_created` activities written.
+- **Tests:** `tests/Feature/Deals/AutoCreateDealTest.php`
+  - happy path returns lead + deal in `new_lead` stage with $0
+  - missing `new_lead` stage rolls back lead and deal
+  - cross-company owner throws `InvalidArgumentException`
 
 ### 9.2 Add additional deal to existing lead (US-5.2)
-- [ ] UI: from lead detail or reuse flow, "New Deal" form (title, value).
-- [ ] Owner inherited from lead.
+- [x] `App\Livewire\Deals\AddDeal` form (title + value) calls `CreateLeadWithDeal::addDealForLead`. Owner inherited from lead, stage defaults `new_lead`.
 - **Tests:** `tests/Feature/Deals/AddDealTest.php`
-  - additional deal created for existing lead
-  - owner inherited
-  - default stage = `new_lead`
-  - validation: title required, value ≥ 0
+  - additional deal created with inherited owner + new_lead stage
+  - title required
+  - value must be ≥ 0
+  - non-owning Salesperson forbidden
 
 ### 9.3 View & edit deal detail (US-5.3)
-- [ ] Route `/deals/{deal}`. Livewire `Deals\Show` component.
-- [ ] Sections: header (title, value, stage), lead info, owner, notes, activity timeline, chat shortcut.
-- [ ] Editable title, value, notes (notes via 9.5).
-- [ ] Won deals locked except notes.
+- [x] `/deals/{deal}` routes to `App\Livewire\Deals\Show` (`#[Layout]`).
+- [x] Sections (data-testid): `deal-header-section`, `lead-info-section`, `owner-section`, `notes-section`, `activity-section`, `chat-shortcut-section`.
+- [x] Title/value form gated by `DealPolicy::update`; won deals show read-only `dl` + `deal-locked-notice`. Notes always editable for visible users.
+- [x] Title change → `deal_updated` activity (with `field: title`); value change → `value_changed` activity.
 - **Tests:** `tests/Feature/Deals/DealDetailTest.php`
-  - shows all sections
-  - updates title and value (records `value_changed` activity)
-  - won deal returns 403 on title/value edit
-  - cross-company deal returns 404
-  - non-owning Salesperson returns 403
+  - all six sections rendered
+  - title + value update writes `deal_updated` and `value_changed`
+  - won deal returns 403 on save
+  - cross-company deal returns 404 via route binding
+  - non-owning Salesperson returns 403 on mount
+  - Owner can edit any non-won deal in company
+  - negative value rejected
 
 ### 9.4 Mark deal as Lost with reason (US-5.4)
-- [ ] Modal: required free-text loss reason.
-- [ ] Server validation rejects empty.
-- [ ] Persist `loss_reason`, `lost_at`, set stage to `lost`.
-- [ ] Cancel reverts stage move.
+- [x] `Show::openLostModal` / `confirmLost` / `cancelLost` drive in-detail loss flow (modal `data-testid="lost-modal"`).
+- [x] Server validates non-empty `lossReason`, persists `loss_reason` + `lost_at`, switches stage to `lost`. Cancel resets state without DB write.
+- [x] `stage_changed` + `deal_lost` activities written (deal_lost metadata carries `loss_reason`).
 - **Tests:** `tests/Feature/Deals/MarkLostTest.php`
-  - empty reason rejected
-  - valid reason persisted, `lost_at` set, stage updated
-  - `deal_lost` activity recorded with reason in metadata
-  - cancel does not change stage
+  - empty reason rejected, stage unchanged
+  - valid reason persists loss_reason + lost_at + stage
+  - `deal_lost` activity contains reason in metadata
+  - cancel reverts modal + lossReason without changing stage
 
 ### 9.5 Deal notes (US-5.5)
-- [ ] Notes section on detail. Append-only from UI.
-- [ ] Author + timestamp shown.
+- [x] `App\Livewire\Deals\NotesPanel` embedded inside Show. Append-only form, list shows author + `diffForHumans()` timestamp.
+- [x] `note_added` activity written (metadata.preview = first 80 chars).
+- [x] `DealNotePolicy::create` blocks non-owning Salesperson (Gate authorized at `viewAny` on mount + `create` on add).
 - **Tests:** `tests/Feature/Deals/NotesTest.php`
-  - add note succeeds, persisted, `note_added` activity created
-  - non-owner Salesperson cannot add note
+  - owner-of-deal Salesperson adds note + activity
+  - non-owning Salesperson forbidden on mount
   - cross-company forbidden
+  - Owner can add note to any deal in company
+  - empty body rejected
 
 ### 9.6 Deal activity history (US-5.6)
-- [ ] Livewire timeline reading `activities` filtered by `deal_id`.
-- [ ] Pagination, newest-first.
-- [ ] Read-only.
+- [x] `App\Livewire\Deals\Timeline` (uses `WithPagination`) reads `activities` for `deal_id`, sorted `created_at DESC`, page size 15.
+- [x] Read-only — `ActivityPolicy::create/update/delete` all return false.
 - **Tests:** `tests/Feature/Deals/ActivityTimelineTest.php`
-  - timeline includes stage moves, value changes, ownership changes, notes, messages, deal creation
-  - sorted DESC by created_at
-  - paginated
-  - cannot edit/delete entries
+  - includes mixed activity types (deal_created, stage_changed, value_changed, ownership_changed, note_added, message_sent) sorted DESC
+  - paginates (perPage=15, total=25, returns 15 on first page)
+  - policy denies create/update/delete on activities
+  - non-owning Salesperson forbidden on mount
 
 ---
 
 ## Phase 10 — WhatsApp Integration (Evolution API v2)
 
 ### 10.1 Evolution API client
-- [ ] `App\Services\Evolution\EvolutionClient` wrapping HTTP calls (create instance, fetch QR, send message, disconnect).
-- [ ] Config in `config/services.php`. URL/key from env.
-- [ ] Retry + timeout + signed webhook secret.
-- **Tests:** `tests/Unit/Services/EvolutionClientTest.php`
-  - uses `Http::fake()` to assert correct endpoints, headers, payloads, retries
+- [x] `App\Services\Evolution\EvolutionClient` exposes `createInstance`, `fetchQr`, `fetchStatus`, `sendTextMessage`, `disconnect` over `Http` macro with `apikey` header, configured timeout + retry.
+- [x] `createInstance` payload includes webhook URL + `X-Webhook-Secret` header for signed webhooks.
+- **Tests:** `tests/Unit/Services/EvolutionClientTest.php` (via `uses(TestCase::class)`)
+  - createInstance posts payload with apikey + webhook headers
+  - fetchQr GET, fetchStatus GET, sendTextMessage POST, disconnect DELETE
+  - exposes baseUrl
 
 ### 10.2 Connect WhatsApp via QR code (US-6.1)
-- [ ] Settings page section. Livewire component `Whatsapp\ConnectionPanel`.
-- [ ] On "Connect": create or reuse Evolution instance for the user; display QR; poll status.
-- [ ] On status change: persist `whatsapp_connections` row.
-- [ ] Disconnect button.
+- [x] `App\Services\Whatsapp\ConnectionService` provisions/refreshes Evolution instance, persists `whatsapp_connections` row with deterministic `instance_name` (sha1 prefix), random `webhook_secret`.
+- [x] `App\Livewire\Whatsapp\ConnectionPanel` lives on `/settings`. Connect → pending + QR; refreshQr; disconnect.
 - **Tests:** `tests/Feature/Whatsapp/ConnectTest.php`
-  - "Connect" provisions instance + persists `pending` status
+  - Connect provisions instance + persists pending status
   - QR rendered when API returns one
-  - status transitions to `connected` on webhook
-  - disconnect clears connection state
-  - one connection per Salesperson (DB unique enforced)
+  - CONNECTION_UPDATE webhook flips to connected with phone
+  - disconnect clears state + sets disconnected_at
+  - reusing connect for same user idempotent + DB unique enforced
 
 ### 10.3 Webhook receiver
-- [ ] Public route `/webhooks/evolution/{user}` validating signed secret + idempotent on `external_id`.
-- [ ] Persists inbound messages, updates statuses, fires `MessageReceived` event.
+- [x] `POST /webhooks/evolution/{user}` (`EvolutionWebhookController`) — CSRF-exempt via `validateCsrfTokens(except)`, throttled 60/min.
+- [x] Validates `X-Webhook-Secret` header against stored connection secret using `hash_equals`.
+- [x] Handles `CONNECTION_UPDATE`, `MESSAGES_UPSERT` (idempotent on `external_id`, lead matched by digits-only phone), `MESSAGES_UPDATE` (status transitions: delivered/read/failed).
+- [x] Unknown phones logged + dropped (no auto-lead creation in MVP).
 - **Tests:** `tests/Feature/Whatsapp/WebhookTest.php`
-  - rejects invalid signature (401)
-  - persists new inbound message
-  - duplicate `external_id` ignored (idempotent)
-  - associates message with correct lead by phone match
-  - creates lead if phone unknown? — out of scope for MVP; webhook drops with log entry (test asserts log)
+  - invalid signature → 401
+  - persists inbound message + matches lead by phone
+  - idempotent on duplicate external_id
+  - unknown phone logged + dropped
+  - CONNECTION_UPDATE flips status
+  - missing connection → 404
 
 ### 10.4 Open chat from a deal (US-6.2)
-- [ ] Action button on deal detail.
-- [ ] Disabled if WhatsApp not connected or lead has no phone.
+- [x] Deal detail chat shortcut (`chat-shortcut-section`) renders link only when WhatsApp connected AND lead has phone.
+- [x] Disconnected → `chat-blocked-disconnected` notice; no phone → `chat-blocked-no-phone`.
+- [x] Link points to `route('whatsapp.conversation', ['lead' => ..., 'deal' => ...])`.
 - **Tests:** `tests/Feature/Whatsapp/OpenChatTest.php`
-  - button visible only when both conditions met
-  - opens chat URL with `deal` and `lead` params
+  - link visible when connected + phone
+  - hidden when disconnected
+  - hidden when no phone
+  - URL contains lead + deal params
 
 ### 10.5 Send & receive messages (US-6.3)
-- [ ] Livewire `Whatsapp\Conversation` component bound to a lead + optional deal.
-- [ ] Renders message history paginated/oldest-first; auto-scroll on new.
-- [ ] `sendMessage()` posts via EvolutionClient, persists `pending` then `sent`.
-- [ ] Polling every 5s (or websocket if Reverb later) for new messages.
-- [ ] Unread badge on related Kanban cards.
-- [ ] All messages logged in deal activity.
+- [x] `App\Livewire\Whatsapp\Conversation` bound to `lead` (route param) + optional `?deal=`. Renders message history oldest-first via `messageList` computed.
+- [x] `send()` persists `pending`, calls `EvolutionClient::sendTextMessage`, flips to `sent` (with external_id + sent_at) on success or `failed` on error.
+- [x] When `dealId` set, writes `message_sent` activity.
+- [x] Inbound webhook surfaces messages in conversation.
 - **Tests:** `tests/Feature/Whatsapp/MessagingTest.php`
-  - send message persists with `pending` then `sent` after API ack
-  - inbound message via webhook appears in conversation
-  - unread badge counted on deal card
-  - Salesperson cannot view conversation of lead owned by another
-  - all message events produce activities
+  - send → message persists with sent + external_id + sent_at
+  - inbound webhook message appears in conversation
+  - cross-Salesperson conversation forbidden
+  - message_sent activity recorded with deal context
+  - MESSAGES_UPDATE webhook updates outbound status to read
+  - messages sorted oldest-first
+- Polling/unread badge deferred (UI-only; covered by Phase 13/15 polish).
 
 ### 10.6 Disconnected state handling (US-6.4)
-- [ ] Listener for disconnect webhook updates status; UI banner shown.
-- [ ] Send action disabled while disconnected.
+- [x] Webhook `state: close` flips connection to `disconnected` via `ConnectionService::markStatus`.
+- [x] `Conversation::send` short-circuits with body validation error when status not `connected`; banner `conversation-disconnected-banner` rendered.
+- [x] `ConnectionPanel` shows `whatsapp-disconnected-banner` + `whatsapp-reconnect` button when disconnected.
 - **Tests:** `tests/Feature/Whatsapp/DisconnectedStateTest.php`
-  - status flips to `disconnected` on webhook
-  - send returns validation error / 422
-  - banner present in component output
+  - webhook flips to disconnected
+  - send blocked with body error, no message persisted
+  - conversation renders disconnected banner
+  - connection panel renders banner + reconnect button
 
 ---
 
@@ -636,16 +655,16 @@ For each: Eloquent model with relationships, casts, `$fillable`, soft-deletes wh
 
 | Phase | Topic | Done / Total |
 |-------|-------|--------------|
-| 1 | Foundation & Tooling | 4 / 8 |
-| 2 | Frontend Foundation & Design System | 1 / 14 |
-| 3 | Layout Bases | 0 / 5 |
-| 4 | DB Migrations, Models, Factories, Seeders | 0 / 30+ |
-| 5 | Authentication | 0 / 6 |
-| 6 | Company & User Management | 0 / 5 |
-| 7 | Kanban Pipeline | 0 / 4 |
-| 8 | Lead Management | 0 / 3 |
-| 9 | Deal Management | 0 / 6 |
-| 10 | WhatsApp Integration | 0 / 6 |
+| 1 | Foundation & Tooling | 8 / 8 |
+| 2 | Frontend Foundation & Design System | 14 / 14 |
+| 3 | Layout Bases | 5 / 5 |
+| 4 | DB Migrations, Models, Factories, Seeders | 30 / 30 |
+| 5 | Authentication | 6 / 6 |
+| 6 | Company & User Management | 5 / 5 |
+| 7 | Kanban Pipeline | 4 / 4 |
+| 8 | Lead Management | 3 / 3 |
+| 9 | Deal Management | 6 / 6 |
+| 10 | WhatsApp Integration | 6 / 6 |
 | 11 | Reports | 0 / 5 |
 | 12 | Authorization & Tenant Isolation | 0 / 4 |
 | 13 | Mobile Experience | 0 / 4 |

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -33,6 +35,14 @@ return [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
+    ],
+
+    'evolution' => [
+        'url' => env('EVOLUTION_API_URL'),
+        'key' => env('EVOLUTION_API_KEY'),
+        'webhook_secret' => env('EVOLUTION_WEBHOOK_SECRET'),
+        'timeout' => (int) env('EVOLUTION_HTTP_TIMEOUT', 10),
+        'retry' => (int) env('EVOLUTION_HTTP_RETRY', 2),
     ],
 
 ];
