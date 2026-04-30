@@ -32,6 +32,7 @@ final class Message extends Model
         'read_at',
         'failed_at',
         'error_message',
+        'created_at',
     ];
 
     public function connection(): BelongsTo

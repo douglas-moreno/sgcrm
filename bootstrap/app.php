@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn () => route('login'));
         $middleware->redirectUsersTo('/kanban');
         $middleware->appendToGroup('web', App\Http\Middleware\EnsurePasswordChanged::class);
+        $middleware->append(App\Http\Middleware\SecurityHeaders::class);
         $middleware->validateCsrfTokens(except: ['webhooks/evolution/*']);
         $middleware->alias([
             'role' => App\Http\Middleware\EnsureRole::class,
