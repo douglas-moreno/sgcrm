@@ -11,8 +11,10 @@ use App\Services\Invites\InviteService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
+#[Layout('components.layouts.app')]
 final class InviteList extends Component
 {
     public string $name = '';

@@ -24,18 +24,29 @@ final class SecurityHeaders
         }
 
         if (! $response->headers->has('Content-Security-Policy')) {
-            $response->headers->set(
-                'Content-Security-Policy',
-                "default-src 'self'; "
-                ."img-src 'self' data: https:; "
-                ."style-src 'self' 'unsafe-inline'; "
-                ."script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
-                ."font-src 'self' data: https:; "
-                ."connect-src 'self'; "
-                ."frame-ancestors 'self'"
-            );
+            $response->headers->set('Content-Security-Policy', $this->csp());
         }
 
         return $response;
+    }
+
+    private function csp(): string
+    {
+        $isProd = app()->isProduction();
+
+        $scriptExtra = $isProd ? '' : ' http://localhost:5173 http://127.0.0.1:5173';
+        $styleExtra = $isProd ? '' : ' http://localhost:5173 http://127.0.0.1:5173';
+        $connectExtra = $isProd ? '' : ' http://localhost:5173 http://127.0.0.1:5173 ws://localhost:5173 ws://127.0.0.1:5173';
+        $fontExtra = $isProd ? '' : ' http://localhost:5173 http://127.0.0.1:5173';
+        $imgExtra = $isProd ? '' : ' http://localhost:5173 http://127.0.0.1:5173';
+
+        return "default-src 'self'; "
+            ."img-src 'self' data: https:{$imgExtra}; "
+            ."style-src 'self' 'unsafe-inline'{$styleExtra}; "
+            ."script-src 'self' 'unsafe-inline' 'unsafe-eval'{$scriptExtra}; "
+            ."script-src-elem 'self' 'unsafe-inline'{$scriptExtra}; "
+            ."font-src 'self' data: https:{$fontExtra}; "
+            ."connect-src 'self'{$connectExtra}; "
+            ."frame-ancestors 'self'";
     }
 }

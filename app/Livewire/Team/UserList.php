@@ -8,9 +8,11 @@ use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 
+#[Layout('components.layouts.app')]
 final class UserList extends Component
 {
     #[Url(as: 'q')]

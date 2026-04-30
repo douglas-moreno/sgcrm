@@ -1,5 +1,11 @@
 <div class="space-y-4" data-testid="user-list">
-    <x-ui.page-header title="Team" subtitle="Manage Salespeople in your company." />
+    <x-ui.page-header title="Team" subtitle="Manage Salespeople in your company.">
+        <x-slot:actions>
+            <a href="{{ route('team.invites') }}" data-testid="invite-link">
+                <x-ui.button type="button" variant="primary">Invite Salesperson</x-ui.button>
+            </a>
+        </x-slot:actions>
+    </x-ui.page-header>
 
     <div class="flex items-center gap-3">
         <x-ui.input wire:model.live.debounce.300ms="search" name="search" placeholder="Search by name or email" data-testid="user-search" />

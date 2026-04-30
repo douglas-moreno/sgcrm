@@ -1,5 +1,11 @@
 <div class="space-y-8" data-testid="invite-list">
-    <x-ui.page-header title="Team invites" subtitle="Invite Salespeople via email link." />
+    <x-ui.page-header title="Team invites" subtitle="Invite Salespeople via email link.">
+        <x-slot:actions>
+            <a href="{{ route('team.index') }}" data-testid="back-to-team">
+                <x-ui.button type="button" variant="ghost">Back to team</x-ui.button>
+            </a>
+        </x-slot:actions>
+    </x-ui.page-header>
 
     <x-ui.card title="Send invite">
         <form wire:submit="send" class="grid gap-4 sm:grid-cols-2" data-testid="invite-form">
