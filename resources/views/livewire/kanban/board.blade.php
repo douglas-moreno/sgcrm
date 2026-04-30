@@ -50,7 +50,7 @@
                         <li
                             wire:key="deal-{{ $deal->id }}"
                             wire:sort.item="{{ $deal->id }}"
-                            class="rounded-md border border-outline bg-surface-soft p-3 shadow-sm cursor-grab"
+                            class="rounded-md border border-outline bg-surface-soft p-3 shadow-sm cursor-grab min-h-11 touch-manipulation"
                             data-testid="deal-card"
                             data-deal-id="{{ $deal->id }}"
                         >
@@ -73,13 +73,13 @@
     </div>
 
     @if ($pendingLostDealId !== null)
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 px-4" data-testid="loss-reason-modal">
-            <div class="w-full max-w-md rounded-lg bg-surface p-6 shadow-lg">
+        <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-ink/40 sm:px-4" data-testid="loss-reason-modal">
+            <div class="w-full sm:max-w-md h-full sm:h-auto bg-surface p-6 shadow-lg sm:rounded-lg flex flex-col">
                 <h3 class="text-base font-semibold text-ink">Mark deal as lost</h3>
                 <p class="text-sm text-ink-muted mt-1">Tell us why this deal was lost.</p>
-                <form wire:submit="confirmLoss" class="mt-4 space-y-4">
-                    <x-ui.textarea wire:model="lossReason" name="lossReason" label="Reason" :error="$errors->first('lossReason')" />
-                    <div class="flex justify-end gap-2">
+                <form wire:submit="confirmLoss" class="mt-4 space-y-4 flex-1 flex flex-col">
+                    <x-ui.textarea wire:model="lossReason" name="lossReason" label="Reason" autofocus :error="$errors->first('lossReason')" />
+                    <div class="mt-auto flex justify-end gap-2">
                         <x-ui.button type="button" variant="ghost" wire:click="cancelLoss" data-testid="loss-cancel">Cancel</x-ui.button>
                         <x-ui.button type="submit" variant="danger" data-testid="loss-confirm">Mark lost</x-ui.button>
                     </div>

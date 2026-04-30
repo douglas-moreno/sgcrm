@@ -3,16 +3,14 @@
 declare(strict_types=1);
 
 use App\Mail\PasswordResetConfirmationMail;
+use App\Mail\PasswordResetMail;
 use App\Models\User;
-use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 use Livewire\Livewire;
 
 beforeEach(function (): void {
-    Notification::fake();
     Mail::fake();
 });
 
@@ -24,7 +22,7 @@ it('sends a reset link for a known email and shows a generic success message', f
         ->call('sendLink')
         ->assertSet('status', __('If an account matches that email, a reset link has been sent.'));
 
-    Notification::assertSentTo($user, ResetPassword::class);
+    Mail::assertQueued(PasswordResetMail::class, fn ($mail) => $mail->user->id === $user->id);
 });
 
 it('returns the same generic message for unknown emails (no enumeration)', function (): void {
@@ -33,7 +31,7 @@ it('returns the same generic message for unknown emails (no enumeration)', funct
         ->call('sendLink')
         ->assertSet('status', __('If an account matches that email, a reset link has been sent.'));
 
-    Notification::assertNothingSent();
+    Mail::assertNotQueued(PasswordResetMail::class);
 });
 
 it('resets the password with a valid token and queues the confirmation email', function (): void {

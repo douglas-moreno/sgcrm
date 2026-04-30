@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Mail;
 
-use App\Models\Invite;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -12,26 +12,27 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-final class InviteMail extends Mailable implements ShouldQueue
+final class PasswordResetMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public Invite $invite) {}
+    public function __construct(public User $user, public string $token) {}
 
     public function envelope(): Envelope
     {
-        return new Envelope(
-            subject: 'You have been invited to '.($this->invite->company?->name ?? 'sgCrm'),
-        );
+        return new Envelope(subject: 'Reset your sgCrm password');
     }
 
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.invite',
+            markdown: 'mail.password-reset',
             with: [
-                'invite' => $this->invite,
-                'url' => route('invites.accept', ['token' => $this->invite->token]),
+                'user' => $this->user,
+                'url' => route('password.reset', [
+                    'token' => $this->token,
+                    'email' => $this->user->email,
+                ]),
             ],
         );
     }

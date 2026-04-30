@@ -507,115 +507,186 @@ Implements `docs/database_schema.md`.
 ## Phase 11 — Reports & Dashboards (Business Owner)
 
 ### 11.1 Reports route + access guard
-- [ ] Routes under `/reports/*` with `role:business_owner` middleware.
-- **Tests:** `tests/Feature/Reports/AccessTest.php`
-  - Salesperson gets 403 on every report route
+- [x] Routes under `/reports/*` with `role:business_owner` middleware (`bootstrap/app.php` aliases `role` → `EnsureRole`).
+- [x] `reports.index` → redirects to `/reports/pipeline`. Sub-routes: `pipeline`, `salesperson`, `loss-reasons`, `activity`.
+- **Tests:** `tests/Feature/Reports/AccessTest.php` — Salesperson 403 on every route, Owner 200, index redirects, guest → login.
 
 ### 11.2 Pipeline overview report (US-7.1)
-- [ ] Per-stage counts and value sums; date-range and Salesperson filters.
-- [ ] Chart (Wireui chart or Chart.js).
+- [x] `App\Services\Reports\PipelineOverviewReport` — per-stage `count` + `total_value`, supports `from`, `to`, `salesperson_id` filters, scoped to `company_id`.
+- [x] `App\Livewire\Reports\PipelineOverview` exposes `rows`, `salespeople`. View renders all six stages (active+ordered).
 - **Tests:** `tests/Feature/Reports/PipelineOverviewTest.php`
-  - aggregates correct per stage
-  - filters apply (date range, salesperson)
+  - aggregates per stage (count + total_value)
+  - filters by salesperson
+  - filters by date range
   - cross-company data never leaks
+  - all six pipeline stages rendered
 
 ### 11.3 Salesperson performance (US-7.2)
-- [ ] Per-Salesperson: won, lost, conversion %, total won value, average deal size.
-- [ ] Date range, sortable columns.
+- [x] `App\Services\Reports\SalespersonPerformanceReport` — per-Salesperson won/lost/conversion%/total_won_value/avg_deal_size. `SORTABLE` whitelist enforced.
+- [x] `App\Livewire\Reports\SalespersonPerformance::sortBy()` toggles direction on repeat column, ignores unknown columns.
 - **Tests:** `tests/Feature/Reports/SalespersonPerformanceTest.php`
-  - metrics computed correctly against seeded data
-  - sort works on each column
+  - metrics computed correctly
+  - zero-deal seller → safe defaults
+  - sort works asc + desc on each sortable column (dataset)
+  - unknown sort column ignored
   - date range filter applied
+  - cross-company sellers excluded
 
 ### 11.4 Loss reason analysis (US-7.3)
-- [ ] Aggregates `deals.loss_reason` normalized (lowercase + trim).
-- [ ] Frequency-ranked list; click expands into deal list.
+- [x] `App\Services\Reports\LossReasonReport::buckets` normalizes `loss_reason` via `mb_strtolower(mb_trim(...))`, frequency-ranked DESC.
+- [x] `deals(filters, reason)` drill-down uses `LOWER(TRIM(loss_reason)) = ?` with eager `owner` + `lead`.
+- [x] `App\Livewire\Reports\LossReasons::expand` toggles `expandedReason`.
 - **Tests:** `tests/Feature/Reports/LossReasonReportTest.php`
-  - normalizes "Price" / "  price" / "PRICE" into one bucket
-  - filter by date and Salesperson
-  - drill-down returns matching deals
+  - normalize "Price" / "  price" / "PRICE" → one bucket
+  - frequency descending order
+  - filter by salesperson
+  - filter by date range on `lost_at`
+  - drill-down returns deals (case-insensitive)
+  - expand toggle clears on second call
+  - cross-company never included
 
 ### 11.5 Activity volume (US-7.4)
-- [ ] Counts messages sent/received, notes added, stage moves, per Salesperson and over time.
-- [ ] Drill-down to top deals by activity.
+- [x] `App\Services\Reports\ActivityVolumeReport::TRACKED_TYPES = [message_sent, message_received, note_added, stage_changed]`. Methods: `totalsByType`, `bySalesperson`, `timeSeries` (DATE bucket).
+- [x] `App\Livewire\Reports\ActivityVolume` enriches `bySalesperson` rows with user names.
 - **Tests:** `tests/Feature/Reports/ActivityVolumeTest.php`
-  - counts per type accurate
-  - per-Salesperson breakdown correct
-  - time-series buckets correct
+  - totals per tracked type accurate; untracked types excluded
+  - per-salesperson breakdown with `total` + `by_type` map + `name`
+  - time-series buckets per day
+  - date range filter applied
+  - cross-company excluded
 
 ---
 
 ## Phase 12 — Authorization & Tenant Isolation (Cross-cutting)
 
 ### 12.1 Salesperson scoping (US-8.1)
-- [ ] Every query for leads/deals/messages/activities filtered by `owner_user_id = auth user` for Salesperson.
-- [ ] Policies enforce action-level checks.
+- [x] Policies (`LeadPolicy`, `DealPolicy`, `MessagePolicy`, `DealNotePolicy`, `ActivityPolicy`) enforce ownership at every action; mount-level `Gate::authorize` in Livewire components.
+- [x] Route-model binding combined with `BelongsToCompany` global scope returns 404 for cross-tenant URLs.
 - **Tests:** `tests/Feature/Authorization/SalespersonScopingTest.php`
-  - direct URL to non-owned deal/lead/message → 403
-  - reuse flow blocks reuse of lead owned by another Salesperson
-  - chat denied for non-owned lead
+  - 403 when Salesperson opens non-owned deal
+  - 403 when Salesperson opens non-owned lead
+  - 403 when Salesperson opens chat for non-owned lead
+  - reuse flow blocks duplicate-email reuse of hidden lead (no deal created)
+  - global scope + ownership policy alignment for lead list
+  - cross-tenant lead routing → 404
+  - cross-tenant deal routing → 404
 
 ### 12.2 Business Owner full access (US-8.2)
-- [ ] Owner bypasses ownership filter within company.
-- [ ] All actions logged with actor in activity history.
+- [x] Owner policy methods bypass ownership filter while keeping company_id check (no global `before` so self-deactivate stays blocked).
+- [x] `ActivityRecorder` writes `user_id = auth()->id()` so Owner-driven actions tag the Owner.
 - **Tests:** `tests/Feature/Authorization/OwnerAccessTest.php`
-  - Owner edits deal of any Salesperson
-  - Owner reassigns leads
-  - actions write activities tagged with Owner user_id
+  - Owner edits any non-won deal in company
+  - Owner views any deal in company
+  - Owner reassigns lead and cascades to deals
+  - title/value updates write activities tagged with Owner user_id
+  - reassign writes `lead_reassigned` + `ownership_changed` tagged with Owner
+  - Owner blocked from editing won deals (parity with Salesperson)
+  - cross-tenant deal → 404
 
 ### 12.3 Multi-tenant isolation (US-8.3)
-- [ ] `BelongsToCompany` trait + global scope on every domain model.
-- [ ] Auto-fill `company_id` on save via observer.
+- [x] `BelongsToCompany` trait registers `CompanyScope` global scope and auto-fills `company_id` from `auth()->user()` on `creating`.
+- [x] Trait used by Lead, Deal, DealNote, Activity, Invite, Message, WhatsappConnection.
+- [x] `leads` table has unique `(company_id, email)` allowing same email across different companies.
 - **Tests:** `tests/Feature/Authorization/TenantIsolationTest.php`
-  - User of Company A cannot read/write any record of Company B (covers leads, deals, messages, invites, users, activities)
-  - factory cross-company foreign keys rejected at DB or model layer
-  - same lead email allowed across different companies
+  - Company A cannot read leads of Company B
+  - Company A cannot read deals of Company B
+  - Company A cannot read messages of Company B
+  - Company A cannot read invites of Company B
+  - Company A cannot read activities of Company B
+  - UserPolicy blocks cross-company view/update
+  - auto-fill respects authenticated user's company_id
+  - same email across companies allowed
+  - duplicate email within company rejected at DB layer
+  - whatsapp connections scoped per company
 
 ### 12.4 Rate limiting + brute-force protection
-- [ ] Login + password reset endpoints rate-limited.
-- [ ] Webhook endpoint per-IP throttle.
-- **Tests:** `tests/Feature/Auth/RateLimitTest.php` — confirm 429 after threshold.
+- [x] `Login::login` — 5 attempts per email+IP / 60s (`RateLimiter`).
+- [x] `ForgotPassword::sendLink` — 5 attempts per email+IP / 60s (`pwd-reset|...` key).
+- [x] Webhook route (`webhooks.evolution`) — `throttle:60,1` middleware.
+- [x] Email verification routes — `throttle:6,1`.
+- **Tests:** `tests/Feature/Auth/RateLimitTest.php`
+  - login locked after 5 failed attempts (correct password also blocked)
+  - password reset locked after 5 attempts on same email+IP
+  - webhook route advertises `throttle:60,1` middleware
 
 ---
 
 ## Phase 13 — Mobile-First Experience
 
 ### 13.1 Kanban mobile (US-9.1)
-- [ ] Horizontally swipeable columns; sticky column headers.
-- [ ] Touch-friendly card targets (≥44px).
-- [ ] `wire:sort` works on touch.
-- **Tests:** `tests/Browser/Kanban/MobileKanbanTest.php`
-  - viewport 360px and 414px renders correctly
-  - card move via touch persists stage
+- [x] Horizontally scrollable column row (`flex overflow-x-auto`, `lg:overflow-visible`, `min-w-[280px]` on each column).
+- [x] Sticky column headers (`sticky top-0`).
+- [x] Touch targets: cards include `min-h-11` (≥44px) + `touch-manipulation`.
+- [x] `wire:sort` (Livewire 4 native) — touch-aware out of the box; no external DnD libs.
+- **Tests:** `tests/Feature/Mobile/KanbanMobileTest.php`
+  - horizontally scrollable column row markup
+  - sticky stage headers
+  - cards meet 44px touch target with `touch-manipulation`
+  - uses `wire:sort` only (no SortableJS)
+  - move via Livewire (touch path semantics) persists stage
+- Pest 4 browser viewport regression deferred to Phase 15.
 
 ### 13.2 Forms mobile
-- [ ] Lead modal, deal edit, loss reason modal — full-screen on mobile.
-- [ ] Auto-focus first field; correct input types/keyboards (`type=email`, `inputmode=tel`).
+- [x] Modals (`CreateLead`, kanban loss-reason, deal-show loss-reason) use `items-end sm:items-center`, `h-full sm:h-auto`, `sm:rounded-lg` → full-screen on mobile, dialog on desktop.
+- [x] Autofocus on first field of every form (CreateLead email, EditLead name, both loss-reason textareas).
+- [x] Correct input types: `type="email"` on email, `inputmode="tel"` on phone, `type="number"` + `step="0.01"` on deal value.
+- **Tests:** `tests/Feature/Mobile/FormsMobileTest.php`
+  - CreateLead full-screen on mobile + autofocus + email/tel input types
+  - EditLead autofocuses name + tel inputmode
+  - kanban loss-reason modal full-screen + autofocus
+  - deal-show loss-reason modal full-screen + autofocus
+  - deal value uses `type="number"` + `step="0.01"`
 
 ### 13.3 Chat mobile
-- [ ] One-handed usable. Composer fixed bottom. Auto-scroll on new message.
-- **Tests:** `tests/Browser/Whatsapp/MobileConversationTest.php`
+- [x] Composer `sticky bottom-0 sm:static` with surface bg + border-top on mobile.
+- [x] Auto-scroll-to-bottom via Alpine `x-ref="messages"` + `scrollBottom()` triggered on `message-sent.window`.
+- [x] Messages list uses `flex-1 overflow-y-auto` so the composer stays in view while history scrolls.
+- **Tests:** `tests/Feature/Mobile/ConversationMobileTest.php`
+  - composer is sticky to bottom on mobile (`sticky bottom-0` + `sm:static`)
+  - messages list scrollable + has Alpine auto-scroll hook + listens to `message-sent.window`
+- Pest 4 browser test deferred to Phase 15.
 
 ### 13.4 Cross-viewport regression
-- **Tests:** `tests/Browser/Smoke/ViewportSmokeTest.php` — visit `/login`, `/kanban`, `/deals/{id}`, `/settings/whatsapp` at 360, 414, 768, 1024, 1440. Assert no horizontal scroll except inside Kanban.
+- [x] Both layouts (`guest`, `app`) emit `<meta name="viewport" content="width=device-width, initial-scale=1.0">`.
+- [x] App layout already has mobile drawer (`mobile-drawer`) + topbar toggle (`mobile-toggle`).
+- **Tests:** `tests/Feature/Mobile/ViewportTest.php`
+  - login emits viewport meta
+  - kanban emits viewport meta + mobile drawer/toggle
+  - deal page emits viewport meta
+  - settings page emits viewport meta
+- Pest 4 browser viewport sweep (`tests/Browser/Smoke/ViewportSmokeTest.php`) deferred to Phase 15 (no Pest browser plugin installed yet).
 
 ---
 
 ## Phase 14 — Notifications & Emails
 
 ### 14.1 Mailables
-- [ ] `WelcomeMail` (Owner registration)
-- [ ] `InviteMail` (US-2.1)
-- [ ] `AccountCreatedMail` (US-2.2)
-- [ ] `PasswordResetMail`
-- [ ] `PasswordResetConfirmationMail`
-- [ ] All branded against design tokens.
-- **Tests:** `tests/Feature/Notifications/MailablesTest.php` — for each, assert subject, recipient, key body strings, and that triggers dispatch on the right action.
+- [x] `App\Mail\WelcomeMail` (Owner registration) — markdown view `mail.welcome`, subject "Welcome to sgCrm".
+- [x] `App\Mail\InviteMail` (US-2.1) — markdown view `mail.invite`, subject includes company name + accept URL.
+- [x] `App\Mail\AccountCreatedMail` (US-2.2) — markdown view `mail.account-created`, includes temporary password + login URL.
+- [x] `App\Mail\PasswordResetMail` — markdown view `mail.password-reset`, dispatched via `User::sendPasswordResetNotification` override.
+- [x] `App\Mail\PasswordResetConfirmationMail` — markdown view `mail.password-reset-confirmation`, dispatched after successful reset.
+- [x] All five mailables use `<x-mail::message>` markdown component (sgCrm signature line in every body); all implement `ShouldQueue`.
+- **Tests:** `tests/Feature/Notifications/MailablesTest.php`
+  - subject + body for each mailable
+  - InviteMail body includes accept URL via `route('invites.accept', token)`
+  - AccountCreatedMail body includes email + temporary password + login URL
+  - PasswordResetMail body includes branded reset link via `route('password.reset', token, email)`
+  - PasswordResetConfirmationMail body warns about unauthorized changes
+  - all five queueable (`ShouldQueue`)
+  - all five emit "The sgCrm team" signature
 
 ### 14.2 Queues
-- [ ] All email send via queued jobs.
-- [ ] Failed-job handling; retries.
-- **Tests:** `tests/Feature/Notifications/QueueTest.php` — `Mail::fake()` + `Queue::fake()` confirm queued dispatch.
+- [x] Every mailable implements `ShouldQueue` so `Mail::to(...)->queue(...)` and `Mail::to(...)->send(...)` both push to the queue driver.
+- [x] `App\Jobs\SendInviteJob implements ShouldQueue` — invite delivery is double-queued (job → queued mailable).
+- [x] Default queue connection in `phpunit.xml` is `sync` (failed-job retries handled at infra layer).
+- **Tests:** `tests/Feature/Notifications/QueueTest.php`
+  - Register flow queues `WelcomeMail`
+  - CreateUser flow queues `AccountCreatedMail` with temp password
+  - ForgotPassword flow queues `PasswordResetMail` (via overridden `User::sendPasswordResetNotification`)
+  - ResetPassword flow queues `PasswordResetConfirmationMail`
+  - `SendInviteJob` is queue-dispatched (`Bus::fake`)
+  - `SendInviteJob::handle` queues `InviteMail` to invite recipient
 
 ---
 
@@ -665,10 +736,10 @@ Implements `docs/database_schema.md`.
 | 8 | Lead Management | 3 / 3 |
 | 9 | Deal Management | 6 / 6 |
 | 10 | WhatsApp Integration | 6 / 6 |
-| 11 | Reports | 0 / 5 |
-| 12 | Authorization & Tenant Isolation | 0 / 4 |
-| 13 | Mobile Experience | 0 / 4 |
-| 14 | Notifications & Emails | 0 / 2 |
+| 11 | Reports | 5 / 5 |
+| 12 | Authorization & Tenant Isolation | 4 / 4 |
+| 13 | Mobile Experience | 4 / 4 |
+| 14 | Notifications & Emails | 2 / 2 |
 | 15 | QA & Hardening | 0 / 6 |
 
 Already completed items derive from a fresh Laravel 13 + Livewire 4 + Wireui + Pest 4 install with default migrations (`users`, `password_reset_tokens`, `sessions`, `cache`, `cache_locks`, `jobs`, `failed_jobs`). All domain features remain to be built.

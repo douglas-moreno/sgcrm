@@ -76,12 +76,12 @@
     </div>
 
     @if ($showLostModal)
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 px-4" data-testid="lost-modal">
-            <div class="w-full max-w-md rounded-lg bg-surface p-6 shadow-lg">
+        <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-ink/40 sm:px-4" data-testid="lost-modal">
+            <div class="w-full sm:max-w-md h-full sm:h-auto bg-surface p-6 shadow-lg sm:rounded-lg flex flex-col">
                 <h3 class="text-base font-semibold text-ink">Mark deal as lost</h3>
-                <form wire:submit="confirmLost" class="mt-4 space-y-4">
-                    <x-ui.textarea wire:model="lossReason" name="lossReason" label="Reason" :error="$errors->first('lossReason')" />
-                    <div class="flex justify-end gap-2">
+                <form wire:submit="confirmLost" class="mt-4 space-y-4 flex-1 flex flex-col">
+                    <x-ui.textarea wire:model="lossReason" name="lossReason" label="Reason" autofocus :error="$errors->first('lossReason')" />
+                    <div class="mt-auto flex justify-end gap-2">
                         <x-ui.button type="button" variant="ghost" wire:click="cancelLost" data-testid="lost-cancel">Cancel</x-ui.button>
                         <x-ui.button type="submit" variant="danger" data-testid="lost-confirm">Mark lost</x-ui.button>
                     </div>

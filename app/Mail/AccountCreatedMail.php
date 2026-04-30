@@ -26,7 +26,7 @@ final class AccountCreatedMail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            view: 'mail.account-created',
+            markdown: 'mail.account-created',
             with: [
                 'user' => $this->user,
                 'temporaryPassword' => $this->temporaryPassword,

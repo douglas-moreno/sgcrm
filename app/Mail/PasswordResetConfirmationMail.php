@@ -25,6 +25,6 @@ final class PasswordResetConfirmationMail extends Mailable implements ShouldQueu
 
     public function content(): Content
     {
-        return new Content(view: 'mail.password-reset-confirmation');
+        return new Content(markdown: 'mail.password-reset-confirmation');
     }
 }

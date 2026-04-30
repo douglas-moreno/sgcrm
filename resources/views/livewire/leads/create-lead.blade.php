@@ -2,12 +2,12 @@
     <x-ui.button type="button" wire:click="openModal" data-testid="new-lead-button">+ New Lead</x-ui.button>
 
     @if ($open)
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 px-4" data-testid="create-lead-modal">
-            <div class="w-full max-w-lg rounded-lg bg-surface p-6 shadow-lg">
+        <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-ink/40 sm:px-4" data-testid="create-lead-modal">
+            <div class="w-full sm:max-w-lg h-full sm:h-auto bg-surface p-6 shadow-lg sm:rounded-lg overflow-y-auto">
                 <h3 class="text-base font-semibold text-ink">New lead</h3>
 
                 <form wire:submit="save" class="mt-4 space-y-4" data-testid="create-lead-form">
-                    <x-ui.input wire:model.live.debounce.500ms="email" name="email" type="email" label="Email" :error="$errors->first('email')" />
+                    <x-ui.input wire:model.live.debounce.500ms="email" name="email" type="email" autofocus label="Email" :error="$errors->first('email')" />
 
                     @if ($matchedLeadId !== null)
                         <div class="rounded-md border border-outline bg-surface-soft p-3 text-sm" data-testid="match-card">

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Mail\PasswordResetMail;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Mail;
 
 final class User extends Authenticatable implements MustVerifyEmail
 {
@@ -81,6 +83,11 @@ final class User extends Authenticatable implements MustVerifyEmail
     public function roleSlug(): ?string
     {
         return $this->role?->slug ?? null;
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        Mail::to($this->email)->queue(new PasswordResetMail($this, (string) $token));
     }
 
     protected function casts(): array

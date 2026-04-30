@@ -3,7 +3,7 @@
 
     <x-ui.card>
         <form wire:submit="save" class="grid gap-4 sm:grid-cols-2" data-testid="edit-lead-form">
-            <x-ui.input wire:model="name" name="name" label="Name" :error="$errors->first('name')" />
+            <x-ui.input wire:model="name" name="name" label="Name" autofocus :error="$errors->first('name')" />
 
             @if (auth()->user()->can('updateEmail', $lead))
                 <x-ui.input wire:model="email" name="email" type="email" label="Email" :error="$errors->first('email')" />
