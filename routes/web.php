@@ -7,6 +7,7 @@ use App\Livewire\Deals\Show as DealShow;
 use App\Livewire\Invites\AcceptInvite;
 use App\Livewire\Kanban\Board;
 use App\Livewire\Leads\EditLead;
+use App\Livewire\Leads\LeadList;
 use App\Livewire\Reports\ActivityVolume;
 use App\Livewire\Reports\LossReasons;
 use App\Livewire\Reports\PipelineOverview;
@@ -37,7 +38,7 @@ Route::post('/webhooks/evolution/{user}', EvolutionWebhookController::class)
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('/kanban', Board::class)->name('kanban');
-    Route::view('/leads', 'app.placeholder')->name('leads.index');
+    Route::get('/leads', LeadList::class)->name('leads.index');
     Route::get('/leads/{lead}', EditLead::class)->name('leads.edit');
     Route::get('/deals/{deal}', DealShow::class)->name('deals.show');
     Route::middleware('role:business_owner')->prefix('reports')->name('reports.')->group(function (): void {
