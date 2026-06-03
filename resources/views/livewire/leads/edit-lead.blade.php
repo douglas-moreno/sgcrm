@@ -1,24 +1,24 @@
 <div data-testid="edit-lead">
-    <x-ui.page-header :title="$lead->name" subtitle="Lead detail" />
+    <x-ui.page-header :title="$lead->name" subtitle="Detalhe do Lead" />
 
     <x-ui.card>
         <form wire:submit="save" class="grid gap-4 sm:grid-cols-2" data-testid="edit-lead-form">
-            <x-ui.input wire:model="name" name="name" label="Name" autofocus :error="$errors->first('name')" />
+            <x-ui.input wire:model="name" name="name" label="Nome" autofocus :error="$errors->first('name')" />
 
             @if (auth()->user()->can('updateEmail', $lead))
                 <x-ui.input wire:model="email" name="email" type="email" label="Email" :error="$errors->first('email')" />
             @else
-                <x-ui.input value="{{ $email }}" name="email_display" label="Email" disabled hint="Only Owner can edit." />
+                <x-ui.input value="{{ $email }}" name="email_display" label="Email" disabled hint="Somente o proprietário pode editar." />
             @endif
 
-            <x-ui.input wire:model="phone" name="phone" label="Phone" inputmode="tel" :error="$errors->first('phone')" />
+            <x-ui.input wire:model="phone" name="phone" label="Celular" inputmode="tel" :error="$errors->first('phone')" />
 
             <div class="sm:col-span-2">
-                <x-ui.textarea wire:model="notes" name="notes" label="Notes" :error="$errors->first('notes')" />
+                <x-ui.textarea wire:model="notes" name="notes" label="Notas" :error="$errors->first('notes')" />
             </div>
 
             <div class="sm:col-span-2 flex justify-end">
-                <x-ui.button type="submit" data-testid="save-lead">Save</x-ui.button>
+                <x-ui.button type="submit" data-testid="save-lead">Salvar</x-ui.button>
             </div>
         </form>
     </x-ui.card>

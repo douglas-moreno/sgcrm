@@ -5,11 +5,11 @@
                 wire:model="newOwnerId"
                 name="newOwnerId"
                 label="Reassign to"
-                placeholder="Select Salesperson"
+                placeholder="Selecione um vendedor"
                 :options="$this->salespeople->pluck('name', 'id')->all()"
                 :error="$errors->first('newOwnerId')"
             />
         </div>
-        <x-ui.button type="submit" data-testid="reassign-submit">Reassign</x-ui.button>
+        <x-ui.button type="submit" data-testid="reassign-submit">Enviar</x-ui.button>
     </form>
 </div>

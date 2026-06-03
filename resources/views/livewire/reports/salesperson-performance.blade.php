@@ -1,9 +1,9 @@
 <div data-testid="report-salesperson-performance" class="space-y-4">
-    <x-ui.page-header title="Salesperson performance" subtitle="Won, lost, conversion, value." />
+    <x-ui.page-header title="Performance do vendedor" subtitle="Ganhos, perdas, conversão, valor." />
 
     <div class="grid gap-3 sm:grid-cols-2">
-        <x-ui.input wire:model.live="from" name="from" type="date" label="From" />
-        <x-ui.input wire:model.live="to" name="to" type="date" label="To" />
+        <x-ui.input wire:model.live="from" name="from" type="date" label="De" />
+        <x-ui.input wire:model.live="to" name="to" type="date" label="Até" />
     </div>
 
     <x-ui.card>

@@ -1,10 +1,10 @@
 <div data-testid="report-loss-reasons" class="space-y-4">
-    <x-ui.page-header title="Loss reasons" subtitle="Frequency-ranked, drill down for deals." />
+    <x-ui.page-header title="Motivos de perda" subtitle="Classificados por frequência, detalhar para negociações." />
 
     <div class="grid gap-3 sm:grid-cols-3">
-        <x-ui.input wire:model.live="from" name="from" type="date" label="From" />
-        <x-ui.input wire:model.live="to" name="to" type="date" label="To" />
-        <x-ui.select wire:model.live="salespersonId" name="salespersonId" label="Salesperson" placeholder="All" :options="$this->salespeople->pluck('name', 'id')->all()" />
+        <x-ui.input wire:model.live="from" name="from" type="date" label="De" />
+        <x-ui.input wire:model.live="to" name="to" type="date" label="Até" />
+        <x-ui.select wire:model.live="salespersonId" name="salespersonId" label="Vendedor" placeholder="Todos" :options="$this->salespeople->pluck('name', 'id')->all()" />
     </div>
 
     <x-ui.card>
@@ -27,7 +27,7 @@
                     @endif
                 </li>
             @empty
-                <li class="py-3 text-xs text-ink-muted">No lost deals.</li>
+                <li class="py-3 text-xs text-ink-muted">Sem negociações perdidas.</li>
             @endforelse
         </ul>
     </x-ui.card>

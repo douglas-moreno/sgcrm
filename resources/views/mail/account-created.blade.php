@@ -1,17 +1,17 @@
 <x-mail::message>
-# Welcome to sgCrm, {{ $user->name }}
+# Bem-vindo ao sgCrm, {{ $user->name }}
 
-Your account has been created by your team's administrator.
+Sua conta foi criada pelo administrador da sua equipe.
 
 **Email:** {{ $user->email }}
-**Temporary password:** {{ $temporaryPassword }}
+**Senha temporária:** {{ $temporaryPassword }}
 
-You will be required to change this password on first login.
+Você será solicitado a alterar esta senha no primeiro login.
 
-<x-mail::button :url="$loginUrl">Sign in</x-mail::button>
+<x-mail::button :url="$loginUrl">Entrar</x-mail::button>
 
-If you did not expect this email please contact your administrator.
+Se você não esperava este email, por favor entre em contato com seu administrador.
 
-Thanks,<br>
-The sgCrm team
+Obrigado,<br>
+A equipe do sgCrm
 </x-mail::message>

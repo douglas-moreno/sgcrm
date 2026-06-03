@@ -1,5 +1,5 @@
 <div class="space-y-4" data-testid="lead-list">
-    <x-ui.page-header title="Leads" subtitle="Browse and manage leads for your pipeline.">
+    <x-ui.page-header title="Leads" subtitle=" Navegue e gerencie os leads para seu pipeline.">
         <x-slot:actions>
             <livewire:leads.create-lead @lead-created="$refresh" />
         </x-slot:actions>
@@ -9,26 +9,26 @@
         <x-ui.input
             wire:model.live.debounce.300ms="search"
             name="search"
-            placeholder="Search by name, email, phone, or owner"
+            placeholder="Pesquisar por nome, email, telefone ou vendedor..."
             data-testid="lead-search"
         />
     </div>
 
     <x-ui.card>
         @if ($this->leads->isEmpty())
-            <x-ui.empty-state title="No leads found" description="Try a different search or add a new lead." icon="users" />
+            <x-ui.empty-state title="Nenhum lead encontrado" description="Tente uma pesquisa diferente ou adicione um novo lead." icon="users" />
         @else
             <div class="overflow-x-auto">
                 <table class="min-w-full text-sm" data-testid="lead-table">
                     <thead>
                         <tr class="text-left text-ink-muted">
-                            <th class="py-2">Name</th>
+                            <th class="py-2">Nome</th>
                             <th class="py-2">Email</th>
-                            <th class="py-2">Phone</th>
-                            <th class="py-2">Owner</th>
+                            <th class="py-2">Celular</th>
+                            <th class="py-2">Vendedor</th>
                             <th class="py-2">Deals</th>
-                            <th class="py-2">Created</th>
-                            <th class="py-2 text-right">Actions</th>
+                            <th class="py-2">Criado</th>
+                            <th class="py-2 text-right">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -38,7 +38,7 @@
                                 <td class="py-2">{{ $lead->email }}</td>
                                 <td class="py-2">{{ $lead->phone ?: 'N/A' }}</td>
                                 <td class="py-2">
-                                    <x-ui.badge>{{ $lead->owner?->name ?? 'Unassigned' }}</x-ui.badge>
+                                    <x-ui.badge>{{ $lead->owner?->name ?? 'Não Atribuído' }}</x-ui.badge>
                                 </td>
                                 <td class="py-2">{{ $lead->deals_count }}</td>
                                 <td class="py-2">{{ $lead->created_at->format('M j, Y') }}</td>
@@ -51,7 +51,7 @@
                                         @endif
 
                                         <a href="{{ route('leads.edit', $lead) }}" data-testid="lead-edit-{{ $lead->id }}">
-                                            <x-ui.button type="button" size="sm" variant="outline">Open</x-ui.button>
+                                            <x-ui.button type="button" size="sm" variant="outline">Editar</x-ui.button>
                                         </a>
                                     </div>
                                 </td>

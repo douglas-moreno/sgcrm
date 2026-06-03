@@ -27,7 +27,7 @@
     @livewireStyles
 </head>
 <body class="min-h-screen bg-surface-alt text-ink antialiased" data-layout="app" data-role="{{ $resolvedRole ?? 'guest' }}" x-data="{ mobileNav: false }">
-
+    <x-ui-notifications />
     <aside class="hidden lg:flex fixed inset-y-0 left-0 w-20 bg-surface border-r border-outline flex-col items-center py-6 gap-2 z-30" data-testid="sidebar" aria-label="Primary">
         <a href="{{ url('/') }}" class="h-10 w-10 rounded-md bg-primary-500 text-white flex items-center justify-center font-bold text-sm" data-testid="brand">
             sg

@@ -1,12 +1,12 @@
 <x-mail::message>
-# Welcome to sgCrm, {{ $user->name }}!
+# Bem-vindo ao sgCrm, {{ $user->name }}!
 
-Your workspace is ready. You can now start adding leads, building your sales pipeline, and chatting with customers via WhatsApp — all in one place.
+Seu espaço de trabalho está pronto. Agora você pode começar a adicionar leads, construir seu funil de vendas e conversar com clientes via WhatsApp — tudo em um único lugar.
 
-<x-mail::button :url="config('app.url')">Open sgCrm</x-mail::button>
+<x-mail::button :url="config('app.url')">Abrir sgCrm</x-mail::button>
 
-If you didn't create this account, please ignore this message.
+Se você não criou esta conta, por favor ignore esta mensagem.
 
-Thanks,<br>
-The sgCrm team
+Obrigado,<br>
+A equipe do sgCrm
 </x-mail::message>

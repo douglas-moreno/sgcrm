@@ -1,12 +1,12 @@
 <x-mail::message>
-# Password changed
+# Senha alterada
 
-Hi {{ $user->name }},
+Oi {{ $user->name }},
 
-The password for your sgCrm account ({{ $user->email }}) was just updated. If this was you, no further action is needed.
+A senha da sua conta no sgCrm ({{ $user->email }}) foi atualizada. Se foi você, nenhuma ação adicional é necessária.
 
-If you did **not** make this change, please reset your password again immediately and contact support.
+Se você **não** fez essa alteração, por favor redefina sua senha imediatamente e entre em contato com o suporte.
 
-Thanks,<br>
-The sgCrm team
+Obrigado,<br>
+A equipe do sgCrm
 </x-mail::message>

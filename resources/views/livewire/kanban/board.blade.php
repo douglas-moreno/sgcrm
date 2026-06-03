@@ -1,24 +1,25 @@
 <div data-testid="kanban-root">
-    <x-ui.page-header title="Pipeline" subtitle="Drag deals across stages.">
+    <x-ui.page-header title="Pipeline" subtitle="Mova negociações através das etapas.">
         <x-slot:actions>
             <livewire:leads.create-lead />
+        
             @if ($this->canFilter())
-                <select
+                <x-ui-select
                     wire:model.live="ownerFilter"
-                    class="h-9 rounded-md border border-outline bg-surface px-3 text-sm"
+                    class="rounded-md bg-surface px-3 text-sm"
                     data-testid="owner-filter"
+                    placeholder="Filtrar por Vendedor"
                 >
-                    <option value="">All Salespeople</option>
                     @foreach ($this->salespeople as $person)
-                        <option value="{{ $person->id }}">{{ $person->name }}</option>
+                        <x-ui-select.option value="{{ $person->id }}" label="{{ $person->name }}" />
                     @endforeach
-                </select>
+                </x-ui-select>
             @endif
+        </x-slot:actions>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <x-ui.button type="submit" variant="ghost" data-testid="logout">Logout</x-ui.button>
             </form>
-        </x-slot:actions>
     </x-ui.page-header>
 
     <div class="flex gap-4 overflow-x-auto pb-4 lg:overflow-visible" data-testid="board">
@@ -28,7 +29,7 @@
                 $totalValue = collect($stageDeals)->sum(fn ($d) => (float) $d->value);
             @endphp
             <section
-                class="min-w-[280px] flex-1 flex flex-col rounded-lg bg-surface border border-outline"
+                class="min-w-70 flex-1 flex flex-col rounded-lg bg-surface border border-outline"
                 data-testid="column"
                 data-stage-slug="{{ $stage->slug }}"
                 data-stage-id="{{ $stage->id }}"
@@ -45,7 +46,7 @@
                     wire:sort="updateStage"
                     wire:sort:group="pipeline-stages"
                     wire:sort:group-id="{{ $stage->slug }}"
-                    class="flex-1 p-3 space-y-3 min-h-[120px]"
+                    class="flex-1 p-3 space-y-3 min-h-30"
                     data-testid="column-list"
                 >
                     @foreach ($stageDeals as $deal)
@@ -73,7 +74,7 @@
                                     <span class="text-xs text-ink-muted">${{ number_format((float) $deal->value, 2) }}</span>
                                 </div>
                                 <p class="text-xs text-ink-muted mt-1" data-testid="deal-lead">{{ $deal->lead?->name }}</p>
-                                <p class="text-[10px] text-ink-muted mt-1">Updated {{ $deal->updated_at?->diffForHumans() }}</p>
+                                <p class="text-[10px] text-ink-muted mt-1">Atualizado {{ $deal->updated_at?->diffForHumans() }}</p>
                                 @if (auth()->user()?->isBusinessOwner())
                                     <div class="mt-2">
                                         <x-ui.badge data-testid="deal-owner-badge">{{ $deal->owner?->name }}</x-ui.badge>
@@ -122,7 +123,7 @@
                     </div>
 
                     <div class="flex gap-2 px-5 pb-4" data-testid="deal-drawer-tabs">
-                        @foreach (['overview' => 'Overview', 'notes' => 'Notes', 'whatsapp' => 'WhatsApp'] as $tab => $label)
+                        @foreach (['overview' => 'Visão Geral', 'notes' => 'Notas', 'whatsapp' => 'WhatsApp'] as $tab => $label)
                             <button
                                 type="button"
                                 wire:click="setDrawerTab('{{ $tab }}')"
@@ -139,7 +140,7 @@
                             class="ml-auto text-sm font-medium text-primary-600 hover:text-primary-700"
                             data-testid="deal-drawer-full-page-link"
                         >
-                            Open full page
+                            Abrir página completa
                         </a>
                     </div>
                 </div>
@@ -151,11 +152,11 @@
                                 <h3 class="text-sm font-semibold text-ink">Deal</h3>
                                 <dl class="mt-3 space-y-3 text-sm">
                                     <div>
-                                        <dt class="text-ink-muted">Title</dt>
+                                        <dt class="text-ink-muted">Título</dt>
                                         <dd class="font-medium text-ink">{{ $this->selectedDeal->title }}</dd>
                                     </div>
                                     <div>
-                                        <dt class="text-ink-muted">Stage</dt>
+                                        <dt class="text-ink-muted">Etapa</dt>
                                         <dd class="text-ink">{{ $this->selectedDeal->stage?->name }}</dd>
                                     </div>
                                     <div>
@@ -225,13 +226,13 @@
     @if ($pendingLostDealId !== null)
         <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-ink/40 sm:px-4" data-testid="loss-reason-modal">
             <div class="w-full sm:max-w-md h-full sm:h-auto bg-surface p-6 shadow-lg sm:rounded-lg flex flex-col">
-                <h3 class="text-base font-semibold text-ink">Mark deal as lost</h3>
-                <p class="text-sm text-ink-muted mt-1">Tell us why this deal was lost.</p>
+                <h3 class="text-base font-semibold text-ink">Marcar negociação como perdida</h3>
+                <p class="text-sm text-ink-muted mt-1">Nos diga o motivo pelo qual esta negociação foi perdida.</p>
                 <form wire:submit="confirmLoss" class="mt-4 space-y-4 flex-1 flex flex-col">
-                    <x-ui.textarea wire:model="lossReason" name="lossReason" label="Reason" autofocus :error="$errors->first('lossReason')" />
+                    <x-ui.textarea wire:model="lossReason" name="lossReason" label="Motivo" autofocus :error="$errors->first('lossReason')" />
                     <div class="mt-auto flex justify-end gap-2">
-                        <x-ui.button type="button" variant="ghost" wire:click="cancelLoss" data-testid="loss-cancel">Cancel</x-ui.button>
-                        <x-ui.button type="submit" variant="danger" data-testid="loss-confirm">Mark lost</x-ui.button>
+                        <x-ui.button type="button" variant="ghost" wire:click="cancelLoss" data-testid="loss-cancel">Cancelar</x-ui.button>
+                        <x-ui.button type="submit" variant="danger" data-testid="loss-confirm">Marcar como perdida</x-ui.button>
                     </div>
                 </form>
             </div>

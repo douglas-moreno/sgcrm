@@ -1,14 +1,14 @@
 <x-mail::message>
-# You're invited, {{ $invite->name }}
+# Você está convidado, {{ $invite->name }}
 
-{{ $invite->invitedBy?->name ?? 'A teammate' }} has invited you to join **{{ $invite->company?->name }}** on sgCrm.
+{{ $invite->invitedBy?->name ?? 'Um colega de equipe' }} te convidou para se juntar **{{ $invite->company?->name }}** no sgCrm.
 
-Click below to set your password and access your workspace. This invitation expires on **{{ $invite->expires_at->format('M j, Y H:i') }}**.
+Clique abaixo para definir sua senha e acessar seu espaço de trabalho. Esta convite expira em **{{ $invite->expires_at->format('M j, Y H:i') }}**.
 
-<x-mail::button :url="$url">Accept invitation</x-mail::button>
+<x-mail::button :url="$url">Aceitar convite</x-mail::button>
 
-If you did not expect this invitation you can ignore this message.
+Se você não esperava este convite, pode ignorar esta mensagem.
 
-Thanks,<br>
-The sgCrm team
+Obrigado,<br>
+A equipe do sgCrm
 </x-mail::message>

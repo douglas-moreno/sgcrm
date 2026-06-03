@@ -1,14 +1,14 @@
 <x-mail::message>
-# Reset your sgCrm password
+# Resetar sua senha do sgCrm
 
-Hi {{ $user->name }},
+Oi {{ $user->name }},
 
-We received a request to reset the password for the sgCrm account at **{{ $user->email }}**.
+Recebemos uma solicitação para redefinir a senha da conta no sgCrm em **{{ $user->email }}**.
 
-<x-mail::button :url="$url">Reset password</x-mail::button>
+<x-mail::button :url="$url">Resetar senha</x-mail::button>
 
-This link expires in 60 minutes. If you did not request a password reset you can safely ignore this email.
+Este link expira em 60 minutos. Se você não solicitou a redefinição de senha, pode ignorar este email.
 
-Thanks,<br>
-The sgCrm team
+Obrigado,<br>
+A equipe do sgCrm
 </x-mail::message>

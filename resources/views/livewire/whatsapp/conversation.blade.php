@@ -8,17 +8,17 @@
     x-on:message-sent.window="$nextTick(() => scrollBottom())"
 >
     @unless ($embedded)
-        <x-ui.page-header :title="'Chat with '.$lead->name" :subtitle="$lead->phone ?? 'No phone'" />
+        <x-ui.page-header :title="'Chat com '.$lead->name" :subtitle="$lead->phone ?? 'Sem número de telefone'" />
     @else
         <div class="mb-3">
-            <h3 class="text-sm font-semibold text-ink">WhatsApp conversation</h3>
-            <p class="text-xs text-ink-muted">{{ $lead->name }} · {{ $lead->phone ?? 'No phone' }}</p>
+            <h3 class="text-sm font-semibold text-ink">Conversa com WhatsApp</h3>
+            <p class="text-xs text-ink-muted">{{ $lead->name }} · {{ $lead->phone ?? 'Sem número de telefone' }}</p>
         </div>
     @endunless
 
     @if (! $this->isConnected)
         <div class="rounded-md bg-warning/10 text-warning px-3 py-2 text-sm" data-testid="conversation-disconnected-banner">
-            WhatsApp disconnected. Reconnect from Settings to send messages.
+            WhatsApp desconectado. Reconecte a partir das Configurações para enviar mensagens.
         </div>
     @endif
 
@@ -29,7 +29,7 @@
                 <p class="text-[10px] text-ink-muted mt-1">{{ $message->status?->name }} · {{ $message->created_at?->diffForHumans() }}</p>
             </li>
         @empty
-            <li class="text-xs text-ink-muted">No messages yet.</li>
+            <li class="text-xs text-ink-muted">Sem mensagens ainda.</li>
         @endforelse
     </ul>
 
@@ -37,6 +37,6 @@
         <div class="flex-1">
             <x-ui.textarea wire:model="body" name="body" label="Message" :error="$errors->first('body')" />
         </div>
-        <x-ui.button type="submit" data-testid="send-button" :disabled="! $this->isConnected">Send</x-ui.button>
+        <x-ui.button type="submit" data-testid="send-button" :disabled="! $this->isConnected">Enviar</x-ui.button>
     </form>
 </div>

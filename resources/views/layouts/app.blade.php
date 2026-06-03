@@ -13,6 +13,7 @@
         @livewireStyles
     </head>
     <body>
+        <x-ui-notifications />
         {{ $slot }}
 
         @livewireScripts

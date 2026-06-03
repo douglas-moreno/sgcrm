@@ -7,7 +7,7 @@
                     <span>{{ $activity->created_at?->diffForHumans() }}</span>
                 </div>
                 <p class="mt-1 text-sm text-ink">
-                    by {{ $activity->user?->name ?? 'system' }}
+                    por {{ $activity->user?->name ?? 'system' }}
                     @if ($activity->before_value !== null && $activity->after_value !== null)
                         — <span class="text-ink-muted">{{ $activity->before_value }}</span>
                         → <span class="text-ink">{{ $activity->after_value }}</span>
@@ -15,7 +15,7 @@
                 </p>
             </li>
         @empty
-            <li class="text-xs text-ink-muted">No activity yet.</li>
+            <li class="text-xs text-ink-muted">Sem atividade ainda.</li>
         @endforelse
     </ul>
 

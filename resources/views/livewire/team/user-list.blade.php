@@ -1,8 +1,8 @@
 <div class="space-y-4" data-testid="user-list">
-    <x-ui.page-header title="Team" subtitle="Manage Salespeople in your company.">
+    <x-ui.page-header title="Equipe" subtitle="Manage Salespeople in your company.">
         <x-slot:actions>
             <a href="{{ route('team.invites') }}" data-testid="invite-link">
-                <x-ui.button type="button" variant="primary">Invite Salesperson</x-ui.button>
+                <x-ui.button type="button" variant="primary">Convidar Vendedor</x-ui.button>
             </a>
         </x-slot:actions>
     </x-ui.page-header>
@@ -18,12 +18,12 @@
             <table class="min-w-full text-sm" data-testid="user-table">
                 <thead>
                     <tr class="text-left text-ink-muted">
-                        <th class="py-2">Name</th>
+                        <th class="py-2">Nome</th>
                         <th class="py-2">Email</th>
-                        <th class="py-2">Role</th>
+                        <th class="py-2">Função</th>
                         <th class="py-2">Status</th>
-                        <th class="py-2">Joined</th>
-                        <th class="py-2 text-right">Actions</th>
+                        <th class="py-2">Entrou</th>
+                        <th class="py-2 text-right">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -34,18 +34,18 @@
                             <td class="py-2"><x-ui.badge>{{ $user->role?->name }}</x-ui.badge></td>
                             <td class="py-2">
                                 @if ($user->is_active)
-                                    <x-ui.badge variant="success">Active</x-ui.badge>
+                                    <x-ui.badge variant="success">Ativo</x-ui.badge>
                                 @else
-                                    <x-ui.badge variant="danger">Inactive</x-ui.badge>
+                                    <x-ui.badge variant="danger">Inativo</x-ui.badge>
                                 @endif
                             </td>
                             <td class="py-2">{{ $user->created_at->format('M j, Y') }}</td>
                             <td class="py-2 text-right space-x-2">
                                 @if ($user->id !== auth()->id())
                                     @if ($user->is_active)
-                                        <x-ui.button size="sm" variant="danger" wire:click="deactivate({{ $user->id }})" data-testid="deactivate-{{ $user->id }}">Deactivate</x-ui.button>
+                                        <x-ui.button size="sm" variant="danger" wire:click="deactivate({{ $user->id }})" data-testid="deactivate-{{ $user->id }}">Desativar</x-ui.button>
                                     @else
-                                        <x-ui.button size="sm" variant="success" wire:click="reactivate({{ $user->id }})" data-testid="reactivate-{{ $user->id }}">Reactivate</x-ui.button>
+                                        <x-ui.button size="sm" variant="success" wire:click="reactivate({{ $user->id }})" data-testid="reactivate-{{ $user->id }}">Reativar</x-ui.button>
                                     @endif
                                 @endif
                             </td>

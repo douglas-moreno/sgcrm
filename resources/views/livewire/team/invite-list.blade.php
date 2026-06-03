@@ -1,34 +1,34 @@
 <div class="space-y-8" data-testid="invite-list">
-    <x-ui.page-header title="Team invites" subtitle="Invite Salespeople via email link.">
+    <x-ui.page-header title="Convites da equipe" subtitle="Convide vendedores via link de email.">
         <x-slot:actions>
             <a href="{{ route('team.index') }}" data-testid="back-to-team">
-                <x-ui.button type="button" variant="ghost">Back to team</x-ui.button>
+                <x-ui.button type="button" variant="ghost">Voltar para a equipe</x-ui.button>
             </a>
         </x-slot:actions>
     </x-ui.page-header>
 
     <x-ui.card title="Send invite">
         <form wire:submit="send" class="grid gap-4 sm:grid-cols-2" data-testid="invite-form">
-            <x-ui.input wire:model="name" name="name" label="Name" :error="$errors->first('name')" />
+            <x-ui.input wire:model="name" name="name" label="Nome" :error="$errors->first('name')" />
             <x-ui.input wire:model="email" name="email" type="email" label="Email" :error="$errors->first('email')" />
             <div class="sm:col-span-2 flex justify-end">
-                <x-ui.button type="submit" data-testid="send-invite">Send invite</x-ui.button>
+                <x-ui.button type="submit" data-testid="send-invite">Enviar convite</x-ui.button>
             </div>
         </form>
     </x-ui.card>
 
     <x-ui.card title="Invites">
         @if ($this->invites->isEmpty())
-            <x-ui.empty-state title="No invites yet" description="Send your first invite using the form above." icon="envelope" />
+            <x-ui.empty-state title="No invites yet" description="Envie seu primeiro convite usando o formulário acima." icon="envelope" />
         @else
             <table class="min-w-full text-sm" data-testid="invite-table">
                 <thead>
                     <tr class="text-left text-ink-muted">
-                        <th class="py-2">Name</th>
+                        <th class="py-2">Nome</th>
                         <th class="py-2">Email</th>
                         <th class="py-2">Status</th>
-                        <th class="py-2">Expires</th>
-                        <th class="py-2 text-right">Actions</th>
+                        <th class="py-2">Expira</th>
+                        <th class="py-2 text-right">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -40,10 +40,10 @@
                             <td class="py-2">{{ $invite->expires_at->format('M j, Y H:i') }}</td>
                             <td class="py-2 text-right space-x-2">
                                 @if ($invite->status?->slug !== \App\Models\InviteStatus::ACCEPTED)
-                                    <x-ui.button size="sm" variant="outline" wire:click="resend({{ $invite->id }})" data-testid="resend-{{ $invite->id }}">Resend</x-ui.button>
+                                    <x-ui.button size="sm" variant="outline" wire:click="resend({{ $invite->id }})" data-testid="resend-{{ $invite->id }}">Reenviar</x-ui.button>
                                 @endif
                                 @if ($invite->status?->slug === \App\Models\InviteStatus::PENDING)
-                                    <x-ui.button size="sm" variant="danger" wire:click="revoke({{ $invite->id }})" data-testid="revoke-{{ $invite->id }}">Revoke</x-ui.button>
+                                    <x-ui.button size="sm" variant="danger" wire:click="revoke({{ $invite->id }})" data-testid="revoke-{{ $invite->id }}">Revogar</x-ui.button>
                                 @endif
                             </td>
                         </tr>

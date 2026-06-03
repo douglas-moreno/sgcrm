@@ -1,10 +1,10 @@
 <div data-testid="create-lead">
-    <x-ui.button type="button" wire:click="openModal" data-testid="new-lead-button">+ New Lead</x-ui.button>
+    <x-ui.button type="button" wire:click="openModal" data-testid="new-lead-button">+ Novo Lead</x-ui.button>
 
     @if ($open)
         <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-ink/40 sm:px-4" data-testid="create-lead-modal">
             <div class="w-full sm:max-w-lg h-full sm:h-auto bg-surface p-6 shadow-lg sm:rounded-lg overflow-y-auto">
-                <h3 class="text-base font-semibold text-ink">New lead</h3>
+                <h3 class="text-base font-semibold text-ink">Novo lead</h3>
 
                 <form wire:submit="save" class="mt-4 space-y-4" data-testid="create-lead-form">
                     <x-ui.input wire:model.live.debounce.500ms="email" name="email" type="email" autofocus label="Email" :error="$errors->first('email')" />
@@ -13,34 +13,34 @@
                         <div class="rounded-md border border-outline bg-surface-soft p-3 text-sm" data-testid="match-card">
                             @if ($matchVisible)
                                 <p class="font-medium text-ink">Existing lead: {{ $matchLeadName }}</p>
-                                <p class="text-xs text-ink-muted">Owner: {{ $matchOwnerName }}</p>
+                                <p class="text-xs text-ink-muted">Dono: {{ $matchOwnerName }}</p>
                                 <div class="mt-3 flex gap-2">
                                     <x-ui.button type="button" variant="outline" wire:click="reuseExisting" data-testid="reuse-existing">Add deal to this lead</x-ui.button>
                                 </div>
                             @else
-                                <p class="text-warning" data-testid="match-blocked">Lead exists; contact your manager.</p>
+                                <p class="text-warning" data-testid="match-blocked">Lead existe; Contatar o Coordenador.</p>
                             @endif
                         </div>
                     @endif
 
-                    <x-ui.input wire:model="name" name="name" label="Name" :error="$errors->first('name')" />
-                    <x-ui.input wire:model="phone" name="phone" label="Phone" inputmode="tel" :error="$errors->first('phone')" />
-                    <x-ui-currency wire:model="value" name="value" label="Value" prefix="R$" thousands="." precision="2" />
-                    <x-ui.textarea wire:model="notes" name="notes" label="Notes" :error="$errors->first('notes')" />
+                    <x-ui.input wire:model="name" name="name" label="Nome" :error="$errors->first('name')" />
+                    <x-ui.input wire:model="phone" name="phone" label="Celular" inputmode="tel" :error="$errors->first('phone')" />
+                    <x-ui-currency wire:model="value" name="value" label="Valor" prefix="R$" thousands="." precision="2" />
+                    <x-ui.textarea wire:model="notes" name="notes" label="Notas" :error="$errors->first('notes')" />
 
                     @if (auth()->user()?->isBusinessOwner())
                         <x-ui.select
                             wire:model="ownerUserId"
                             name="ownerUserId"
-                            label="Owner"
+                            label="Dono do Lead"
                             :options="$this->salespeople->pluck('name', 'id')->all()"
                             :error="$errors->first('ownerUserId')"
                         />
                     @endif
 
                     <div class="flex justify-end gap-2">
-                        <x-ui.button type="button" variant="ghost" wire:click="closeModal" data-testid="cancel">Cancel</x-ui.button>
-                        <x-ui.button type="submit" data-testid="save">Create</x-ui.button>
+                        <x-ui.button type="button" variant="ghost" wire:click="closeModal" data-testid="cancel">Cancelar</x-ui.button>
+                        <x-ui.button type="submit" data-testid="save">Criar</x-ui.button>
                     </div>
                 </form>
             </div>
