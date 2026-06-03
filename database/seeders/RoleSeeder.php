@@ -12,8 +12,8 @@ final class RoleSeeder extends Seeder
     public function run(): void
     {
         foreach ([
-            ['slug' => Role::BUSINESS_OWNER, 'name' => 'Business Owner', 'description' => 'Full access within the company.'],
-            ['slug' => Role::SALESPERSON, 'name' => 'Salesperson', 'description' => 'Access scoped to assigned leads and deals.'],
+            ['slug' => Role::BUSINESS_OWNER, 'name' => 'Coordenadora', 'description' => 'Acesso completo dentro da empresa.'],
+            ['slug' => Role::SALESPERSON, 'name' => 'Vendedora', 'description' => 'Acesso limitado aos leads e negociações atribuídos.'],
         ] as $row) {
             Role::updateOrCreate(['slug' => $row['slug']], $row + ['is_active' => true]);
         }
