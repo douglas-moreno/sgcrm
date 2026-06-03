@@ -48,12 +48,12 @@
             </div>
         </main>
 
-        <aside class="hidden lg:flex relative w-1/2 max-w-[640px] bg-primary-500 text-white items-center justify-center overflow-hidden" data-testid="guest-aside" aria-hidden="true">
+        <aside class="hidden lg:flex relative w-1/2 max-w-160 bg-primary-500 text-white items-center justify-center overflow-hidden" data-testid="guest-aside" aria-hidden="true">
             <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.4) 0, transparent 40%), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.3) 0, transparent 45%);"></div>
             <div class="relative z-10 px-12 max-w-md text-center">
                 <p class="text-xs uppercase tracking-[0.4em] text-white/70">sgCrm</p>
-                <h2 class="text-3xl font-semibold leading-tight mt-4">Sales pipeline + WhatsApp, in one place.</h2>
-                <p class="text-sm text-white/80 mt-4">Manage leads on a Kanban board and chat with customers without leaving the CRM.</p>
+                <h2 class="text-3xl font-semibold leading-tight mt-4">Pipeline de vendas + WhatsApp, em um só lugar.</h2>
+                <p class="text-sm text-white/80 mt-4">Gerencie leads em um quadro Kanban e converse com clientes sem sair do CRM.</p>
             </div>
         </aside>
     </div>

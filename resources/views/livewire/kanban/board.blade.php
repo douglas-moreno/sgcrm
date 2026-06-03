@@ -4,22 +4,23 @@
             <livewire:leads.create-lead />
         
             @if ($this->canFilter())
-                <x-ui-select
+                <select
                     wire:model.live="ownerFilter"
-                    class="rounded-md bg-surface px-3 text-sm"
+                    class="rounded-md h-9 bg-surface px-3 text-sm"
                     data-testid="owner-filter"
-                    placeholder="Filtrar por Vendedor"
                 >
                     @foreach ($this->salespeople as $person)
-                        <x-ui-select.option value="{{ $person->id }}" label="{{ $person->name }}" />
+                        <option value="">Todos os vendedores</option>
+                        <option value="{{ $person->id }}"> {{ $person->name }} </option>
                     @endforeach
-                </x-ui-select>
+                </select>
             @endif
-        </x-slot:actions>
+        
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <x-ui.button type="submit" variant="ghost" data-testid="logout">Logout</x-ui.button>
             </form>
+        </x-slot:actions>
     </x-ui.page-header>
 
     <div class="flex gap-4 overflow-x-auto pb-4 lg:overflow-visible" data-testid="board">

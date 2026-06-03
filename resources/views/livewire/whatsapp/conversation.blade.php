@@ -1,6 +1,6 @@
 <div
     data-testid="conversation"
-    class="flex flex-col {{ $embedded ? 'min-h-[32rem]' : 'h-[calc(100vh-7rem)]' }}"
+    class="flex flex-col {{ $embedded ? 'min-h-128' : 'h-[calc(100vh-7rem)]' }}"
     x-data="{
         scrollBottom() { const el = this.$refs.messages; if (el) el.scrollTop = el.scrollHeight; },
     }"
