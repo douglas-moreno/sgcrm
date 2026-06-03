@@ -26,7 +26,7 @@ services:
             - redis
             - mailpit
     mysql:
-        image: 'mysql:8.4'
+        image: 'mysql:8.0'
         ports:
             - '${FORWARD_DB_PORT:-3306}:3306'
         environment:
@@ -35,7 +35,7 @@ services:
             MYSQL_DATABASE: '${DB_DATABASE}'
             MYSQL_USER: '${DB_USERNAME}'
             MYSQL_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_ALLOW_EMPTY_PASSWORD: 1
+            # MYSQL_ALLOW_EMPTY_PASSWORD: 1
             MYSQL_EXTRA_OPTIONS: '${MYSQL_EXTRA_OPTIONS:-}'
         volumes:
             - 'sail-mysql:/var/lib/mysql'
@@ -44,11 +44,7 @@ services:
         networks:
             - sail
         healthcheck:
-            test:
-                - CMD
-                - mysqladmin
-                - ping
-                - '-p${DB_PASSWORD}'
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${DB_USERNAME}", "-p${DB_PASSWORD}"]
             retries: 10
             timeout: 5s
             interval: 5s
@@ -90,29 +86,18 @@ services:
             redis:
                 condition: service_healthy
         environment:
-            - SERVER_TYPE=http
-            - SERVER_PORT=8080
-            - 'SERVER_URL=${EVOLUTION_SERVER_URL:-http://localhost:8080}'
-            - LANGUAGE=en
-            - AUTHENTICATION_TYPE=apikey
-            - 'AUTHENTICATION_API_KEY=${EVOLUTION_API_KEY}'
-            - DATABASE_ENABLED=true
-            - DATABASE_PROVIDER=mysql
-            - 'DATABASE_CONNECTION_URI=mysql://${DB_USERNAME}:${DB_PASSWORD}@mysql:3306/evolution'
-            - DATABASE_SAVE_DATA_INSTANCE=true
-            - DATABASE_SAVE_DATA_NEW_MESSAGE=true
-            - DATABASE_SAVE_MESSAGE_UPDATE=true
-            - DATABASE_SAVE_DATA_CONTACTS=true
-            - DATABASE_SAVE_DATA_CHATS=true
-            - DATABASE_SAVE_DATA_LABELS=true
-            - DATABASE_SAVE_DATA_HISTORIC=true
-            - DATABASE_CONNECTION_CLIENT_NAME=evolution_v2
-            - CACHE_REDIS_ENABLED=true
-            - CACHE_REDIS_URI=redis://redis:6379/1
-            - CACHE_REDIS_PREFIX_KEY=evolution_v2
-            - CACHE_REDIS_SAVE_INSTANCES=false
-            - CACHE_LOCAL_ENABLED=false
-            - CONFIG_SESSION_PHONE_VERSION=2.3000.1033851049
+            SERVER_TYPE: http
+            SERVER_PORT: 8080
+
+            AUTHENTICATION_TYPE: apikey
+            AUTHENTICATION_API_KEY: ${EVOLUTION_API_KEY}
+
+            DATABASE_ENABLED: "true"
+            DATABASE_PROVIDER: mysql
+            DATABASE_CONNECTION_URI: mysql://${DB_USERNAME}:${DB_PASSWORD}@mysql:3306/evolution
+
+            CACHE_REDIS_ENABLED: "true"
+            CACHE_REDIS_URI: redis://redis:6379/1
 networks:
     sail:
         driver: bridge

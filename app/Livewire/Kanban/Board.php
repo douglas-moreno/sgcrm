@@ -23,8 +23,14 @@ use Livewire\Component;
 #[Layout('components.layouts.app')]
 final class Board extends Component
 {
+    private const DRAWER_TABS = ['overview', 'notes', 'whatsapp'];
+
     #[Url(as: 'owner')]
     public ?int $ownerFilter = null;
+
+    public ?int $selectedDealId = null;
+
+    public string $activeDrawerTab = 'overview';
 
     public ?int $pendingLostDealId = null;
 
@@ -39,12 +45,14 @@ final class Board extends Component
         }
     }
 
-    public function updateStage(int $dealId, string $toStageSlug, ActivityRecorder $recorder): array
+    public function updateStage(int $dealId, int|string $positionOrStageSlug, ?string $toStageSlug = null): array
     {
         $deal = Deal::query()->findOrFail($dealId);
         Gate::authorize('move', $deal);
 
-        $toStage = PipelineStage::query()->where('slug', $toStageSlug)->firstOrFail();
+        $resolvedStageSlug = is_string($positionOrStageSlug) ? $positionOrStageSlug : $toStageSlug;
+        $toStage = PipelineStage::query()->where('slug', $resolvedStageSlug)->firstOrFail();
+        $recorder = app(ActivityRecorder::class);
 
         if ($deal->stage_id === $toStage->id) {
             return ['status' => 'noop'];
@@ -62,6 +70,33 @@ final class Board extends Component
         $this->applyStageChange($deal, $fromStage, $toStage, $recorder);
 
         return ['status' => 'ok'];
+    }
+
+    public function openDeal(int $dealId, string $tab = 'overview'): void
+    {
+        $deal = Deal::query()
+            ->with(['lead', 'owner', 'stage'])
+            ->findOrFail($dealId);
+
+        Gate::authorize('view', $deal);
+
+        $this->selectedDealId = $deal->id;
+        $this->setDrawerTab($tab);
+    }
+
+    public function closeDeal(): void
+    {
+        $this->selectedDealId = null;
+        $this->activeDrawerTab = 'overview';
+    }
+
+    public function setDrawerTab(string $tab): void
+    {
+        if (! in_array($tab, self::DRAWER_TABS, true)) {
+            throw ValidationException::withMessages(['activeDrawerTab' => 'Invalid tab.']);
+        }
+
+        $this->activeDrawerTab = $tab;
     }
 
     public function confirmLoss(ActivityRecorder $recorder): void
@@ -164,6 +199,26 @@ final class Board extends Component
             ->whereHas('role', fn ($q) => $q->where('slug', Role::SALESPERSON))
             ->orderBy('name')
             ->get();
+    }
+
+    #[Computed]
+    public function selectedDeal(): ?Deal
+    {
+        if ($this->selectedDealId === null) {
+            return null;
+        }
+
+        $deal = Deal::query()
+            ->with(['lead', 'owner', 'stage'])
+            ->find($this->selectedDealId);
+
+        if ($deal === null) {
+            return null;
+        }
+
+        Gate::authorize('view', $deal);
+
+        return $deal;
     }
 
     public function render(): View

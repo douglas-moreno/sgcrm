@@ -24,6 +24,8 @@ final class CreateLead extends Component
 
     public string $phone = '';
 
+    public float $value = 0;
+
     public string $notes = '';
 
     public ?int $ownerUserId = null;
@@ -106,6 +108,7 @@ final class CreateLead extends Component
                 },
             ],
             'phone' => ['nullable', 'string', 'max:50'],
+            'value' => ['required', 'numeric', 'min:0'],
             'notes' => ['nullable', 'string', 'max:5000'],
         ];
 
@@ -141,6 +144,7 @@ final class CreateLead extends Component
                 'email' => $data['email'],
                 'phone' => $data['phone'] ?? null,
                 'notes' => $data['notes'] ?? null,
+                'value' => $data['value'] ?? 0,
             ],
         );
 
@@ -167,6 +171,7 @@ final class CreateLead extends Component
 
         $this->validate([
             'name' => ['required', 'string', 'max:255'],
+            'value' => ['required', 'numeric', 'min:0'],
         ]);
 
         $service->addDealForLead($actor, $lead, $this->name);

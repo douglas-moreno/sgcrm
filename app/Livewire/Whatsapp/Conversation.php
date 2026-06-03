@@ -29,12 +29,15 @@ final class Conversation extends Component
 
     public ?int $dealId = null;
 
+    public bool $embedded = false;
+
     public string $body = '';
 
-    public function mount(Lead $lead, ?int $deal = null): void
+    public function mount(Lead $lead, ?int $deal = null, bool $embedded = false): void
     {
         Gate::authorize('viewAny', [Message::class, $lead]);
         $this->lead = $lead;
+        $this->embedded = $embedded;
 
         if ($deal !== null) {
             $dealModel = Deal::query()->findOrFail($deal);

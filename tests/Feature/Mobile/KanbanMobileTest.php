@@ -59,7 +59,11 @@ it('uses Livewire wire:sort (no external DnD lib markers)', function (): void {
         ->html();
 
     expect($html)->toContain('wire:sort')
-        ->and($html)->toContain('wire:sort.item')
+        ->and($html)->toContain('wire:sort:group')
+        ->and($html)->toContain('wire:sort:group-id')
+        ->and($html)->toContain('wire:sort:item')
+        ->and($html)->toContain('wire:sort:handle')
+        ->and($html)->toContain('open-deal-drawer')
         ->and($html)->not->toContain('SortableJS')
         ->and($html)->not->toContain('sortablejs');
 });
@@ -70,7 +74,7 @@ it('move via Livewire (touch path semantics) persists stage', function (): void 
 
     Livewire::actingAs($this->seller)
         ->test(Board::class)
-        ->call('updateStage', $deal->id, PipelineStage::CONTACTED);
+        ->call('updateStage', $deal->id, 0, PipelineStage::CONTACTED);
 
     $contactedId = PipelineStage::where('slug', PipelineStage::CONTACTED)->value('id');
     expect($deal->fresh()->stage_id)->toBe($contactedId);

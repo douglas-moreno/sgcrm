@@ -25,6 +25,7 @@
 
                     <x-ui.input wire:model="name" name="name" label="Name" :error="$errors->first('name')" />
                     <x-ui.input wire:model="phone" name="phone" label="Phone" inputmode="tel" :error="$errors->first('phone')" />
+                    <x-ui-currency wire:model="value" name="value" label="Value" prefix="R$" thousands="." precision="2" />
                     <x-ui.textarea wire:model="notes" name="notes" label="Notes" :error="$errors->first('notes')" />
 
                     @if (auth()->user()?->isBusinessOwner())

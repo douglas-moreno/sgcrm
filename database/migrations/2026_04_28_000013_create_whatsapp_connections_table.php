@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('status_id')->constrained('whatsapp_connection_statuses')->restrictOnDelete();
             $table->string('instance_name', 191)->unique();
             $table->string('phone_number', 32)->nullable();
-            $table->string('qr_code_path', 2048)->nullable();
+            $table->longText('qr_code_path')->nullable();
             $table->timestamp('connected_at')->nullable();
             $table->timestamp('disconnected_at')->nullable();
             $table->timestamp('last_checked_at')->nullable();
