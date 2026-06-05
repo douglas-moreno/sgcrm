@@ -1,0 +1,67 @@
+# docker-compose.prod.yml
+services:
+    mysql:
+        image: 'mysql:8.0'
+        restart: unless-stopped
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ROOT_HOST: '%'
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+        volumes:
+            - 'sail-mysql:/var/lib/mysql'
+            - './docker/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
+            - './docker/mysql/create-evolution-database.sh:/docker-entrypoint-initdb.d/20-create-evolution-database.sh'
+        ports:
+            - '127.0.0.1:3306:3306'   # apenas localhost!
+        networks:
+            - sail
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${DB_USERNAME}", "-p${DB_PASSWORD}"]
+            retries: 10
+            timeout: 5s
+            interval: 5s
+
+    redis:
+        image: 'redis:alpine'
+        restart: unless-stopped
+        ports:
+            - '127.0.0.1:6379:6379'   # apenas localhost!
+        volumes:
+            - 'sail-redis:/data'
+        networks:
+            - sail
+
+    evolution_v2:
+        image: 'evoapicloud/evolution-api:latest'
+        restart: unless-stopped
+        ports:
+            - '127.0.0.1:8080:8080'
+        volumes:
+            - 'evolution_instances:/evolution/instances'
+        networks:
+            - sail
+        depends_on:
+            mysql:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        environment:
+            SERVER_TYPE: http
+            SERVER_PORT: 8080
+            AUTHENTICATION_TYPE: apikey
+            AUTHENTICATION_API_KEY: ${EVOLUTION_API_KEY}
+            DATABASE_ENABLED: "true"
+            DATABASE_PROVIDER: mysql
+            DATABASE_CONNECTION_URI: mysql://${DB_USERNAME}:${DB_PASSWORD}@mysql:3306/evolution
+            CACHE_REDIS_ENABLED: "true"
+            CACHE_REDIS_URI: redis://redis:6379/1
+
+networks:
+    sail:
+        driver: bridge
+volumes:
+    sail-mysql:
+    sail-redis:
+    evolution_instances:
