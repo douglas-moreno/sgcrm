@@ -27,7 +27,7 @@ final class DatabaseSeeder extends Seeder
             'name' => 'Ariane Melo',
             'email' => 'amelo@sgtecnologia.com.br',
             'password' => bcrypt('101010'),
-            'role_id' => Role::BUSINESS_OWNER,
+            'role_id' => 1,
         ]);
     }
 }
