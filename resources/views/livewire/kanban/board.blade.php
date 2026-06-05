@@ -9,8 +9,8 @@
                     class="rounded-md h-9 bg-surface px-3 text-sm"
                     data-testid="owner-filter"
                 >
+                <option value="">Todos os vendedores</option>
                     @foreach ($this->salespeople as $person)
-                        <option value="">Todos os vendedores</option>
                         <option value="{{ $person->id }}"> {{ $person->name }} </option>
                     @endforeach
                 </select>
