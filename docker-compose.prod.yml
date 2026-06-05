@@ -32,6 +32,14 @@ services:
             - 'sail-redis:/data'
         networks:
             - sail
+        healthcheck:
+            test:
+                - CMD
+                - redis-cli
+                - ping
+            retries: 10
+            timeout: 5s
+            interval: 5s
 
     evolution_v2:
         image: 'evoapicloud/evolution-api:latest'
